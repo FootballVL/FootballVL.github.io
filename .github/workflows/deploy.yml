@@ -30,7 +30,7 @@ jobs:
       - run: pnpm run lint
       - run: pnpm run build
         env:
-          GITHUB_PAGES_BASE: /${{ github.event.repository.name }}/
+          GITHUB_PAGES_BASE: ${{ github.event.repository.name == format('{0}.github.io', github.repository_owner) && '/' || format('/{0}/', github.event.repository.name) }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

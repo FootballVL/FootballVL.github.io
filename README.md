@@ -53,9 +53,9 @@ npm run preview
 
 ## GitHub Pages
 
-The Vite base path is controlled by `GITHUB_PAGES_BASE`. The included workflow sets it automatically to `/${{ github.event.repository.name }}/`.
+The Vite base path is controlled by `GITHUB_PAGES_BASE`. The workflow uses `/` for the account site repository (`FootballVL.github.io`) and `/<repository-name>/` for other project repositories.
 
-The deployment workflow uses pnpm 11.25.0 and the committed pnpm lockfile for reproducible installs. npm remains available for the development commands above. Repository: https://github.com/FootballVL/FootballVL.
+The deployment workflow uses pnpm 11.25.0 and the committed pnpm lockfile for reproducible installs. npm remains available for the development commands above. Repository: https://github.com/FootballVL/FootballVL.github.io. Published site: https://footballvl.github.io/.
 
 To publish:
 

@@ -1,5 +1,5 @@
 export const links = {
-  githubRepository: 'https://github.com/FootballVL/FootballVL',
+  githubRepository: 'https://github.com/FootballVL/FootballVL.github.io',
   originalResearch: `${import.meta.env.BASE_URL}research/original-report.html`,
   technicalMethodology: '#data',
 };
