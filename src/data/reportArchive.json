@@ -1,0 +1,4304 @@
+[
+  {
+    "id": "introduction",
+    "title": "Introduction",
+    "level": 1,
+    "path": [],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "topic-1",
+    "title": "Ciencia de Datos aplicada al fútbol: Análisis y modelización del valor de mercado",
+    "level": 1,
+    "path": [],
+    "paragraphs": [],
+    "code": [],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-001.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "º-objetivo-del-análisis",
+    "title": "1º Objetivo del análisis:",
+    "level": 1,
+    "path": [
+      "1º Objetivo del análisis:"
+    ],
+    "paragraphs": [
+      "Objetivo principal: Entrenar un modelo de aprendizaje automático (Machine Learning) capaz de predecir el valor de mercado de los futbolistas basándose exclusivamente en métricas de rendimiento deportivo.",
+      "Aunque el modelo aprende de los precios históricos de Transfermarkt, su objetivo es generar una tasación objetiva y estandarizada, “Transfermarkt no utiliza ningún algoritmo para elaborar sus valores, sino que se basa en el criterio de la comunidad.”. Al contrastar nuestro Precio Teórico con el Precio de Mercado de Transfermarkt podremos identificar oportunidades de mercado y también evitar sobrepagar por jugadores que no justifican su valor.",
+      "Objetivo secundario:",
+      "Comprender la estructura demográfica y física del fútbol actual, analizando qué perfiles físicos son más comunes, qué posición es la más poblada y cómo se distribuyen las variables de rendimiento (minutos jugados, goles, asistencias y lesiones, entre otros). Además, se busca cruzar estas variables para observar las particularidades económicas y deportivas de las distintas ligas internacionales y las diferentes posiciones en el campo."
+    ],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "º-datos",
+    "title": "2º Datos",
+    "level": 1,
+    "path": [
+      "2º Datos"
+    ],
+    "paragraphs": [
+      "Se utilizará el dataset final_data.csv con 10.754 registros, procedentes de 10.754 jugadores de los equipos de 20 ligas diferentes: La Liga, Premier, Serie A, Bundesliga, Ligue 1, Edrevisie, Primeria Liga, Championship, Turkish Super Lig, Liga MX, Russian Premier League, Bundesliga Austria, Saudi Pro League, MLS, South African Premier Division, A-League, Argentine Primera División, Brasileirao, K-League y J1 League. Este conjunto de datos se generó recopilando datos de Transfermarkt utilizando Selenium y BeautifulSoup el 10 de junio de 2023 (Khang Huynh Nguyen Trong · Minh Nguyen).",
+      "Contiene datos de las temporadas 21/22 y 22/23, lo que nos permite, analizar a enero del 2026, si los jugadores que el modelo pronostica como infravalorados para esta temporada han sido revalorizados acorde a lo que apuntaba el modelo y viceversa.",
+      "Tenemos datos de rendimiento, como goles, asistencias, minutos jugados, premios (individuales y colectivos), partidos jugados, porterias a cero y goles encajados (ambos para porteros). También tenemos variables de disciplina como tarjetas amarillas y rojas, datos de altura, edad, valor actual y valor máximo."
+    ],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "º-bloque-de-limpieza-y-tratado-de-datos",
+    "title": "3º Bloque de limpieza y tratado de datos",
+    "level": 1,
+    "path": [
+      "3º Bloque de limpieza y tratado de datos"
+    ],
+    "paragraphs": [
+      "Antes de ponernos a modelar, dedicamos un tiempo importante a asegurar que los datos tuvieran sentido. Un modelo es tan bueno como la información que le das, así que seguimos varios pasos para pulir el dataset.",
+      "Calidad del dato y contexto: Lo primero fue comprobar la salud de los datos. Buscamos valores nulos o celdas vacías, ya que eso nos habría obligado a imputar datos usando la media de los variables. Por suerte, el dataset estaba impoluto, sin valores ausentes, lo que nos dio una base muy sólida para empezar. Sin embargo, a los datos les falta contexto competitivo. Para solucionarlo, cruzamos la información de los jugadores con diccionarios externos para ubicar a cada uno en su liga correspondiente. Además, añadimos el Opta Power Ranking (septiembre 2023). Esto fue clave: no es lo mismo marcar 10 goles en la Premier League que en una liga menor. “The Opta Power Rankings assess and rate more than 15,000 men’s and women’s domestic teams across the globe on advanced performance metrics. Each team receives a score on a global scale, from 0 (the weakest) to 100 (the strongest)”. Esto es clave, no es lo mismo marcar 10 goles en la Premier League que en una liga menor. Gracias a este coeficiente, el modelo puede entender el mérito real de cada estadística según dónde se haya producido.",
+      "Eliminación de ruido. Aquí tomamos una decisión necesaria, eliminamos unos 400 registros de jugadores que no habían disputado ni un solo minuto en las dos temporadas analizadas, ya que estos jugadores son ruido estadístico puro. Si un jugador no juega, sus estadísticas son cero, pero su precio de mercado puede variar muchísimo por factores externos (fama pasada, rumores, fichajes inflados). Si dejábamos esos datos, el modelo se volvería loco intentando entender por qué alguien con 0 en todo vale 20 millones. Como nuestro objetivo es tasar el rendimiento real, nos quedamos solo con los que pisan el césped.",
+      "Ingeniería de variables: Una vez limpia la base, creamos nuevas métricas para ayudar al modelo a pensar mejor:",
+      "Los datos originales venían promediados por 90 minutos. Esto es peligroso. Imagina un suplente que juega los últimos 10 minutos de la temporada y marca un gol de rebote. Matemáticamente, tendría una proyección de 9 goles por partido, superando falsamente a una estrella que mete 30 goles en todo el año. Para evitar este sesgo y ser justos con los titulares, calculamos las estadísticas absolutas de la temporada.",
+      "Roles Funcionales: Las posiciones clásicas (defensa, medio, delantero) se quedan cortas hoy en día. Decidimos reclasificar a los jugadores por su posición específica, y más adelante por su función en el juego. Porteros, Jugadores defensivos, Bandas, Creadores de juego y Finalizadores.",
+      "Por último, generamos una variable combinada de Goles + Asistencias, cada vez más valorada para analizar a los jugadores por sus contribuciones directas de gol."
+    ],
+    "code": [
+      "library(tidyverse) #Librería para limpieza de datos\nfirst_data <- read.csv(\"final_data.csv\")\n\n#Primero buscamos si existen valores ausentes en el dataframe, lo cual sería \n#perjudicial y en caso de existir, podríamos buscar métodos de imputación como\n#sustituir los valores ausentes por la media de las variables.\n#Tras revisión, vemos que no tenemos datos ausentes lo que enriquece el dataframe.\n\ntable(is.na(first_data))",
+      "FALSE \n236588",
+      "#Es interesante añadir diccionarios aparte para relacionar los equipos y jugadores\n#con sus respectivas ligas para relacionar los jugadores con su contexto competitivo. \n#Los ubicamos al principio por comodidad posterior.\n\nequipos_ordenados <- unique(as.character(first_data$team))\n\nligas_vector <- character(length(equipos_ordenados))\nligas_vector[1:20]    <- \"Premier League\"\nligas_vector[21:38]   <- \"Bundesliga\"\nligas_vector[39:58]   <- \"La Liga\"\nligas_vector[59:78]   <- \"Serie A\"\nligas_vector[79:98]   <- \"Ligue 1\"\nligas_vector[99:116]  <- \"Eredivisie\"\nligas_vector[117:136] <- \"Brasileirao\"\nligas_vector[137:154] <- \"Primeira Liga\"\nligas_vector[155:172] <- \"Liga MX\"\nligas_vector[173:188] <- \"Russian Premier League\"\nligas_vector[189:212] <- \"Championship\"\nligas_vector[213:231] <- \"Turkish Super Lig\"\nligas_vector[232:243] <- \"Bundesliga Austria\"\nligas_vector[244:272] <- \"MLS\"\nligas_vector[273:300] <- \"Argentine Primera División\"\nligas_vector[301:318] <- \"J1 League\"\nligas_vector[319:334] <- \"Saudi Pro League\"\nligas_vector[335:346] <- \"K League 1\"\nligas_vector[347:362] <- \"South African Premier Division\"\nligas_vector[363:374] <- \"A-League\"\n\nleague_map <- data.frame(\n  team = equipos_ordenados,\n  league = ligas_vector\n)\n\n#También, añadimos un diccionario con datos de Opta score septiembre 2023, \n#en el que se detalla el coeficiente de nivel general de la liga, \n#\"the Opta Power Rankings assess and rate more than 15,000 men’s and women’s \n#domestic teams across the globe on advanced performance metrics. \n#Each team receives a score on a global scale, from 0 (the weakest) to 100 (the strongest)\"\n\ntabla_puntuaciones <- data.frame(\n  league = c(\"Premier League\", \"Bundesliga\", \"La Liga\", \"Serie A\", \"Ligue 1\", \n             \"Championship\", \"Eredivisie\", \"Primeira Liga\", \"Brasileirao\", \n             \"Turkish Super Lig\", \"Russian Premier League\", \"MLS\", \n             \"Bundesliga Austria\", \"Argentine Primera División\", \"Liga MX\", \n             \"J1 League\", \"K League 1\", \"Saudi Pro League\", \n             \"South African Premier Division\", \"A-League\"),\n  league_rating = c(87.66, 84.04, 83.43, 83.46, 81.41, 78.58, 77.24, 77.20, \n                    76.43, 75.65, 75.08, 74.77, 74.76, 73.66, 73.20, 72.16, \n                    72.09, 71.94, 70.20, 68.80)\n)\n\n\nfinal_data <- read.csv(\"final_data.csv\") |> # Cargamos datos\n  \n\n#Eliminamos unos 400 registros vacíos con  0 minutos en estas dos temporadas\n#Para disminuir el error y el que el futuro modelo no se vuelva loco buscando \n#predecir por qué un jugador con esas características puede valer 100.000€ o 20.000.000€\n#Dado que el objetivo de este estudio es tasar el precio en función del rendimiento\n#efectivo presente, los jugadores inactivos actúan como ruido estadístico incontrolable. \n#Al eliminarlos, se garantiza que el algoritmo solo asocie valor a la producción real\n#sobre el terreno de juego.\n\n  filter(minutes.played > 0) |>\n  \n#Eliminamos dos variables de la posición del jugador que venían por defecto para \n#a continuación crear nuevas divisiones que se ajusten a lo que quiero reflejar\n\n  select(-winger, -position_encoded) |>\n  \n#Creamos nuevas variables con los valores absolutos además de tener una proporción\n#por partido, ya que, si dejamos las variables de rendimiento medidas por cada 90\n#minutos, las grandes estrellas que juegan 50 0 60 partidos por temporada, estarían\n#en desventaja frente jugadores que no son titulares o han jugado pocos partidos\n#pero tienen coeficientes parecidos.\n  \n#Por ejemplo: un suplente que juega los últimos 10 minutos de la temporada y marca \n#un gol registraría una tasa artificial de '9 goles por partido', colocándose \n#matemáticamente por encima de una superestrella que marca 30 goles en 3.000 minutos.\n  \n  mutate(\n    goals_abs = round((goals * minutes.played) / 90),\n    assists_abs = round((assists * minutes.played) / 90),\n    yellow_cards_abs = round((yellow.cards * minutes.played) / 90),\n    red_cards_abs = round((red.cards * minutes.played) / 90),\n    goals_conceded_abs = round((goals.conceded * minutes.played)/90),\n    clean_sheets_abs = round((clean.sheets * minutes.played)/90)\n  ) |>\n  \n#Aquí es donde unimos los diccionarios creados arriba al dataframe mediante joints.\n  \n  left_join(league_map, by = \"team\") |>\n  left_join(tabla_puntuaciones, by = \"league\") |>\n  \n#Creamos una clasificación simplificada de los jugadores en base a su posición\n#en base a las cuatro principales posiciones. Porteros, Defensas, Mediocentros y\n# Delanteros.\n \n   mutate(\n    position_group = case_when(\n      grepl(\"Goalkeeper\", position, ignore.case = TRUE) ~ \"Goalkeeper\",\n      grepl(\"Defender\", position, ignore.case = TRUE)   ~ \"Defender\",\n      grepl(\"midfield\", position, ignore.case = TRUE)   ~ \"Midfielder\",\n      grepl(\"Attack\", position, ignore.case = TRUE)     ~ \"Forward\",\n      TRUE ~ \"Other\"\n    ),\n    position_group = as.factor(position_group),\n\n#Creamos una clasificación por rol para usar en el modelo detallando las distintas\n#funciones que tienen los jugadores dentro del campo, encontrando porteros,\n#jugadores defensivos (centrales y mediocentros defensivos o pivotes), \n#bandas(extremos y laterales), creadores de juego (interiores, mediocentros ofensivos y\n#mediocentros) y finalizadores (delantero centros y segundo delanteros)\n\n    rol_funcional = case_when(\n    position == \"Goalkeeper\" ~ \"Goalkeepers\",\n    position %in% c(\"Defender Centre-Back\", \"midfield-DefensiveMidfield\", \"Defender\") ~ \"Defensive_Players\",\n    position %in% c(\"Defender Left-Back\", \"Defender Right-Back\", \n                    \"Attack-LeftWinger\", \"Attack-RightWinger\") ~ \"Full_Backs_Wingers\",\n    position %in% c(\"midfield-CentralMidfield\", \"midfield\", \n                    \"midfield-AttackingMidfield\", \"midfield-LeftMidfield\", \"midfield-RightMidfield\") ~            \"Game_Creator\",\n    position %in% c(\"Attack Centre-Forward\", \"Attack-SecondStriker\", \"Attack\") ~ \"Striker\"\n  ),\n  rol_funcional = as.factor(rol_funcional), \n\n# Por último, creamos una variable combinada de goles y asistencias, \n#cada vez más valorada para analizalos jugadores por sus contribuciones \n#directas de gol\n\n    goals_assists_abs = goals_abs + assists_abs,\n  )"
+    ],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "º-análisis-exploratorio-de-datos",
+    "title": "4º Análisis exploratorio de datos",
+    "level": 1,
+    "path": [
+      "4º Análisis exploratorio de datos"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "análisis-univariante",
+    "title": "4.1 Análisis Univariante",
+    "level": 2,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante"
+    ],
+    "paragraphs": [],
+    "code": [
+      "library(scales)  #Legibilidad de gráficos\nlibrary(ggplot2) #Visualización de datos\nlibrary(ggrepel) #Claridad visual de etiquetas\n\n#Creamos un tema para los gráficos, lo que permite que se vean más profesional.\n\nmi_tema <- theme_minimal() +\n  theme(\n    plot.title = element_text(face = \"bold\"),\n    axis.text.x = element_text(angle = 45, hjust = 1)\n  )"
+    ],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "grupo-1-premios-lesiones-y-disciplina",
+    "title": "GRUPO 1: Premios, Lesiones y Disciplina",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 1: Premios, Lesiones y Disciplina"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "premios-tanto-individuales-como-colectivos",
+    "title": "1. PREMIOS (Tanto individuales como colectivos)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 1: Premios, Lesiones y Disciplina",
+      "1. PREMIOS (Tanto individuales como colectivos)"
+    ],
+    "paragraphs": [
+      "La distribución muestra que la gran mayoría de los jugadores tienen entre 0 y 5 premios, siendo muy interesante que hayan más jugadores con al menos 1 premio que jugadores con 0 premios. A partir de 6 premios, la frecuencia de jugadores cae brutalmente y a partir de 11 también, quedando únicamente la máxima élite del fútbol."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = cut(award, \n                                 breaks = c(-1, 0, 5, 10, 15, 20, 25, 30, Inf),\n                                 labels = c(\"0\", \"1-5\", \"6-10\", \"11-15\", \"16-20\", \"21-25\", \"26-30\", \">30\")))) +\n    geom_bar(fill = \"#C0392B\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3) +\n    labs(title = \"Distribución de Premios\", x = \"Intervalos de premios\", y = \"Nº Jugadores\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-002.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "lesiones",
+    "title": "2. LESIONES",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 1: Premios, Lesiones y Disciplina",
+      "2. LESIONES"
+    ],
+    "paragraphs": [
+      "Vemos que la mayoría de jugadores se pierden como mucho 15 partidos cada dos temporadas, y los escalones van decayendo. Lo cual viene a significar que de media se suelen perder entre siete y ocho partidos por temporada, teniendo en cuenta que una temporada suele tener entre 40 y 50 partidos normalmente contando todas las competiciones, pudiendo llegar a 60 en equipos top que llegan a finales y sus jugadores compiten internacionalmente con sus selecciones. Vemos que perderse ocho partidos por temporada no supone una gran cantidad de partidos y muchas veces estas ausencias son más por precaución (molestias/sobrecargas) que lesiones estructurales de larga duración."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = cut(games_injured, \n                                 breaks = c(-1, 15, 30, 45, 60, 75, 100, Inf),\n                                 labels = c(\"0-15\", \"16-30\", \"31-45\", \"46-60\", \"61-75\", \"76-100\", \">100\")))) +\n    geom_bar(fill = \"#C0392B\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3) +\n    labs(title = \"Distribución de Lesiones\", x = \"Partidos Lesionado\", y = \"Nº Jugadores\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-003.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "amarillas",
+    "title": "3. AMARILLAS",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 1: Premios, Lesiones y Disciplina",
+      "3. AMARILLAS"
+    ],
+    "paragraphs": [
+      "Vemos como la mayoría de jugadores recibieron entre 0 y 4 tarjetas amarillas en estas dos temporadas, lo cual son números muy positivos. No perdiendose estos jugadores ningun partido por amonestación, la cual llega en competiciones domésticas al ver 5 cartulinas amarillas y en competiciones europeas al recibir tres tarjetas amarillas. La distribución por posiciçon se estudiará más adelante."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = cut(yellow_cards_abs, \n                                 breaks = c(-1, 4, 9, 14, 19, 24, 29, Inf),\n                                 labels = c(\"0-4\", \"5-9\", \"10-14\", \"15-19\", \"20-24\", \"25-29\", \">30\")))) +\n    geom_bar(fill = \"#C0392B\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3) +\n    labs(title = \"Tarjetas Amarillas\", x = \"Intervalos de amarillas\", y = \"Nº Jugadores\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-004.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "rojas",
+    "title": "4. ROJAS",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 1: Premios, Lesiones y Disciplina",
+      "4. ROJAS"
+    ],
+    "paragraphs": [
+      "En cuanto a tarjetas rojas, vemos que casi el 90% de jugadores no recibió ninguna en estas dos temporadas y solo 4 de ellos recibieron 4, siendo estos, curiosamente, dos jugadores del Real Betis de La Liga, Luiz Felipe y Pezzela."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = as.factor(red_cards_abs))) +\n    geom_bar(fill = \"#C0392B\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3) +\n    labs(title = \"Tarjetas Rojas\", x = \"Total\", y = \"Nº Jugadores\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-005.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "grupo-2-rendimiento",
+    "title": "GRUPO 2: RENDIMIENTO",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "goles",
+    "title": "1. Goles",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO",
+      "1. Goles"
+    ],
+    "paragraphs": [
+      "Los goles tienen una distribución decreciente marcada, habiendo únicamente cinco jugadores que lograron marcar más de 60 goles entre estas dos temporadas y viendo únicamente tres super cracks con más de 80 goles, Robert Lewandowski, Erling Haaland y Kylian Mbappeé."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = goals_abs)) +\n    geom_histogram(fill = \"#2980B9\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(n.breaks = 10) +\n    scale_y_continuous(trans = \"log1p\", labels = comma) +\n    labs(title = \"Distribución: Goles\", x = NULL, y = \"Frecuencia (Log)\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-006.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "asistencias",
+    "title": "2. Asistencias",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO",
+      "2. Asistencias"
+    ],
+    "paragraphs": [
+      "Las asistencias o pases de gol, tienen una distribución muy similar a la de los goles, con solo tres asistentes con más de 40 asistencias, Kevin de Bryune, Dusan Tadic y Vinicius Junior."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = assists_abs)) +\n    geom_histogram(fill = \"#2980B9\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(n.breaks = 10) +\n    scale_y_continuous(trans = \"log1p\", labels = comma) +\n    labs(title = \"Distribución: Asistencias\", x = NULL, y = \"Frecuencia (Log)\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-007.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "clean-sheets",
+    "title": "3. Clean Sheets",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO",
+      "3. Clean Sheets"
+    ],
+    "paragraphs": [
+      "Las porterías a cero se distribuyen también decrecientemente observando que hay más frecuencias en el 1 que en el 0, esto quiere decir que la mayoría de porteros consiguen al menos una portería a cero, ya que encajar gol en absolutamente todos los partidos que juega un equipo sería un desastre no solo para el portero, si no también para el equipo."
+    ],
+    "code": [
+      "print(\n  final_data |> \n    filter(position_group == \"Goalkeeper\") |>\n  ggplot(aes(x = clean_sheets_abs)) +\n    geom_histogram(fill = \"#2980B9\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(n.breaks = 10) +\n    scale_y_continuous(trans = \"log1p\", labels = comma) +\n    labs(title = \"Distribución: Porterías a Cero\", x = NULL, y = \"Frecuencia (Log)\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-008.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "goles-encajados",
+    "title": "4. Goles Encajados",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO",
+      "4. Goles Encajados"
+    ],
+    "paragraphs": [
+      "Lo mismo ocurre con el gráfico de goles encajados, aunque aquí la interpretación es contraria, si un portero juega regularmente, más de 15 partidos por temporadas, y es capaz de no recibir un gol, estaríamos hablando de una defensa increíble, con mucha superioridad frente a las delanteras que enfrenta y con una actuación en la portería fantástica, sin embargo, estos porteros con 0 goles encajados no tienen más de 4 partidos en estas dos temporadas, lo cual tiene más sentido."
+    ],
+    "code": [
+      "print(\n  final_data |> \n    filter(position_group == \"Goalkeeper\") |>\n  ggplot(aes(x = goals_conceded_abs)) +\n    geom_histogram(fill = \"#2980B9\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(n.breaks = 10) +\n    scale_y_continuous(trans = \"log1p\", labels = comma) +\n    labs(title = \"Distribución: Goles Encajados\", x = NULL, y = \"Frecuencia (Log)\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-009.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "goles-asistencias",
+    "title": "5. Goles + Asistencias",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 2: RENDIMIENTO",
+      "5. Goles + Asistencias"
+    ],
+    "paragraphs": [
+      "El uso de la agrupación de goles y asistencias como evaluador de rendimiento se ha normalizado en los últimos años, lo cual tiene todo el sentido del mundo, ya que al igual que muchos goles son communmente denominados “tap in” o gol a portería vacía, y son contabilizados para estadísticas, los pases de estos goles, tienen igual o incluso más importancia. Esta estadística ayuda a que los extremos y mediocentros, que por lo general marcan menos goles pero generan asistencias, puedan demostrar también sus resultados.",
+      "Este gráfico muestra una distribución similar a los goles y a las asistencias, encontrando cinco jugadores por encima de los 90 goles + asistencias: Mbappé, Haaland, Lewandowski, Benzema y Salah."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = goals_assists_abs)) +\n    geom_histogram(fill = \"#2980B9\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(n.breaks = 10) +\n    scale_y_continuous(trans = \"log1p\", labels = comma) +\n    labs(title = \"Distribución: Goles + Asistencias\", x = NULL, y = \"Frecuencia (Log)\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-010.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "grupo-3-perfiles-físicos-demográficos-minutos-jugados-y-valor-de-mercado",
+    "title": "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "edad",
+    "title": "1. Edad",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado",
+      "1. Edad"
+    ],
+    "paragraphs": [
+      "La edad se distribuye como una distribución normal con cola izquierda, lo cual viene a indicar que cuando un futbolista adquiere sus 26 años de edad (valor más frecuente), los jugadores comienzan a no ser tan frecuentes, debido a que con la edad, en diferentes posiciones se pierden capacidades, encontrando tras los 30 años un mayor escalón hacia abajo en la distribución, coincidiendo con los años finales de un futbolista, edad que últimamente con los avances en alimentación y preparación física, cada vez se retrasa más.",
+      "Más adelante relacionaremos la edad con la posición para conocer que posición sufre más esta cuesta."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = age)) +\n    geom_histogram(binwidth = 1, fill = \"#F39C12\", color = \"black\") +\n    geom_text(stat = 'bin', binwidth = 1, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_continuous(breaks = seq(15, 45, 5)) +\n    labs(title = \"Edad\", x = \"Años\", y = \"Frecuencia\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-011.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "altura",
+    "title": "2. Altura",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado",
+      "2. Altura"
+    ],
+    "paragraphs": [
+      "La altura a priori tiene una distribución aproximadamente normal, siendo el valor más frecuente 180 cm, encontrando también atípicos a la izquierda y a la derecha de este valor, pero en general, el futbol es un deporte de contacto y los partidos son largos con esfuerzos constantes, por lo que, un físico contundente que permita ganar duelos como el de 180cm, es el más frecuente.",
+      "Más adelante relacionaremos la altura con la posición para conocer las diferencias específicas de las posiciones."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% filter(!is.na(height)), aes(x = height)) +\n    geom_histogram(fill = \"#7F8C8D\", color = \"white\", bins = 30) +\n    geom_text(stat = 'bin', bins = 30, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    labs(title = \"Altura\", x = \"cm\", y = \"Frecuencia\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-012.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "minutos",
+    "title": "3. Minutos",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado",
+      "3. Minutos"
+    ],
+    "paragraphs": [
+      "La distribución de los minutos es curiosa, la mayoría de los registros están entre 1 y 2500 minutos,(recordando que hemos eliminado los registros con 0 minutos) lo cual viene a significar que la mayoría de jugadores juegan el equivalente a menos de 28 partidos enteros por temporada. Siendo este perfil el más común."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% filter(!is.na(minutes.played)), aes(x = minutes.played)) +\n    geom_histogram(fill = \"#7F8C8D\", color = \"white\", bins = 30) +\n    geom_text(stat = 'bin', bins = 30, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    labs(title = \"Minutos Jugados\", x = \"Minutos\", y = \"Frecuencia\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-013.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "valor-de-mercado",
+    "title": "4. Valor de Mercado",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "GRUPO 3: Perfiles Físicos, demográficos, minutos jugados y valor de mercado",
+      "4. Valor de Mercado"
+    ],
+    "paragraphs": [
+      "El valor de mercado de los jugadores de estas 20 ligas se distribuye aproximadamente normal, con una ligera cola a la izquierda, siendo el valor mediano 800.000€, más adelante, analizaremos que ligas presentan valores más altos. El valor de 800.000€ suele ser común en jugadores de segunda división española, inglesa, y ligas menores como la holandesa, austriaca…"
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% filter(current_value > 0), aes(x = current_value)) +\n    geom_histogram(fill = \"#8E44AD\", color = \"white\", bins = 40) +\n    geom_text(stat = 'bin', bins = 40, aes(label = after_stat(count)), vjust = -0.5, size = 2.5) +\n    scale_x_log10(labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    labs(title = \"Valor de Mercado\", x = \"Euros (Escala Log)\", y = \"Frecuencia\") + mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-014.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "grupo-4-cantidad-de-jugadores-por-ligas-y-cantidad-de-jugadores-por-posición",
+    "title": "Grupo 4: Cantidad de jugadores por ligas y cantidad de jugadores por posición",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 4: Cantidad de jugadores por ligas y cantidad de jugadores por posición"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "ligas-ordenadas-por-frecuencia",
+    "title": "1. Ligas (Ordenadas por frecuencia)",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "1. Ligas (Ordenadas por frecuencia)"
+    ],
+    "paragraphs": [
+      "Vemos como las ligas con más jugadores son las ligas con más equipos, normalmente con dos grupos, como la liga argentina, japonesa y MLS, o ligas con más equipos que la media como la segunda inglesa (championship)"
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = fct_infreq(league))) +\n    geom_bar(fill = \"#16A085\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3, fontface = \"bold\") +\n    labs(title = \"Jugadores por Liga\", x = NULL, y = \"Nº Jugadores\") + \n    mi_tema\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-015.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "posiciones-específicas",
+    "title": "2. Posiciones específicas",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "1. Ligas (Ordenadas por frecuencia)",
+      "2. Posiciones específicas"
+    ],
+    "paragraphs": [
+      "En el gráfico vemos que la posición con más jugadores es la de defensa central, esto tiene lógica ya que todos los equipos suelen jugar con al menos dos centrales, lo que supone dos titulares y dos suplentes, sin embargo, hay equipos que que juegan con tres centrales, lo cual puede elevar la necesidad de esta posición a 6 jugadores, las posiciones con menos frecuencia son posiciones con denominaciones no tan comunes como interior izquierdo e interior diestro, que normalmente se agrupan a mediocentros o a extremos y segundo delantero, que normalmente se agrupa a mediocentro ofensivo o delantro centro. Quitando estos tres, vemos que las posiciones menos frecuentes son los extremos (wingers), los cuales suelen tener una importancia vital en los equipos, y solo se suele jugar con uno por cada banda, por lo que en un equipo suelen haber dos extremos izquierdos y dos derechos."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% \n           filter(!position %in% c(\"Attack\", \"Defender\", \"midfield\")), \n         aes(x = fct_infreq(position))) +\n    geom_bar(fill = \"#16A085\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3, fontface = \"bold\") +\n    labs(title = \"Posiciones Específicas\", \n         subtitle = \"Excluyendo etiquetas genéricas\", \n         x = NULL, y = \"Nº Jugadores\") + \n    mi_tema +\n    theme(axis.text.x = element_text(size = 8)) \n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-016.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "posiciones-generales",
+    "title": "3. Posiciones generales",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "1. Ligas (Ordenadas por frecuencia)",
+      "3. Posiciones generales"
+    ],
+    "paragraphs": [
+      "Fijandonos en posiciones agrupadas en cuatro: Portero, Defensas, Mediocentros y Delanteros, vemos que la posición con menos jugadores es la de portero, ya que la cantidad de porteros en un equipo suele ser de dos o tres por equipo. Y siendo la posición más poblada la de defensas, ya que los equipos suelen jugar con cuatro defensores (dos centrales y dos laterales) o cinco defensores (tres centrales y dos carrileros, siendo estos últimos considerados defensores también)",
+      "Aquí vemos un análisis estadístico básico de las variables, siendo interesante ver los rangos, medias y medianas de las variables.El jugador más joven tiene 15 años, el más bajo 156 cm, el más mayor 43 años y el más alto 206cm."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = fct_infreq(position_group))) +\n    geom_bar(fill = \"#16A085\", color = \"black\") +\n    geom_text(stat = 'count', aes(label = after_stat(count)), vjust = -0.5, size = 3, fontface = \"bold\") +\n    labs(title = \"Distribución por Posición\", x = NULL, y = \"Nº Jugadores\") + \n    mi_tema\n)",
+      "options(scipen = 999) # Evitar notación científica\n\nfinal_data |>\n  select(age, height, minutes.played, current_value, \n         goals_abs, assists_abs, yellow_cards_abs, games_injured, award, red_cards_abs, goals_assists_abs) |>\n  summary()",
+      "age            height      minutes.played current_value      \n Min.   :15.00   Min.   :156.0   Min.   :   1   Min.   :        0  \n 1st Qu.:22.00   1st Qu.:176.0   1st Qu.: 795   1st Qu.:   300000  \n Median :26.00   Median :181.2   Median :2238   Median :   800000  \n Mean   :26.13   Mean   :181.2   Mean   :2567   Mean   :  3754406  \n 3rd Qu.:30.00   3rd Qu.:186.0   3rd Qu.:4051   3rd Qu.:  3000000  \n Max.   :43.00   Max.   :206.0   Max.   :9510   Max.   :180000000  \n   goals_abs       assists_abs     yellow_cards_abs games_injured   \n Min.   : 0.000   Min.   : 0.000   Min.   : 0.000   Min.   :  0.00  \n 1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.: 1.000   1st Qu.:  0.00  \n Median : 1.000   Median : 1.000   Median : 4.000   Median :  6.00  \n Mean   : 3.861   Mean   : 2.753   Mean   : 5.013   Mean   : 16.28  \n 3rd Qu.: 5.000   3rd Qu.: 4.000   3rd Qu.: 8.000   3rd Qu.: 25.00  \n Max.   :83.000   Max.   :45.000   Max.   :35.000   Max.   :339.00  \n     award        red_cards_abs    goals_assists_abs\n Min.   : 0.000   Min.   :0.0000   Min.   :  0.000  \n 1st Qu.: 0.000   1st Qu.:0.0000   1st Qu.:  0.000  \n Median : 1.000   Median :0.0000   Median :  3.000  \n Mean   : 2.014   Mean   :0.1485   Mean   :  6.614  \n 3rd Qu.: 2.000   3rd Qu.:0.0000   3rd Qu.:  8.000  \n Max.   :92.000   Max.   :4.0000   Max.   :116.000"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-017.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "grupo-5-análisis-de-atípicos-con-etiquetas",
+    "title": "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "goles-etiquetamos-a-los-que-tienen-30-goles",
+    "title": "1. Goles (Etiquetamos a los que tienen > 30 goles)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS",
+      "1. Goles (Etiquetamos a los que tienen > 30 goles)"
+    ],
+    "paragraphs": [
+      "El diagrama de cajas nos permite observar como se distribuyen las variables, la caja indica todos los valores entre el primer y tercer cuartil (25% y 75%), viendo que hay muchos atípicos, marcamos los más importantes de forma descendente."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = \"\", y = goals_abs)) +\n    geom_boxplot(fill = \"#2980B9\", color = \"black\", outlier.colour = \"red\", outlier.shape = 16) +\n    \n    geom_text(data = subset(final_data, goals_abs > 30), \n              aes(label = name), \n              nudge_x = 0.2,   # Mueve el texto a la derecha\n              size = 3,        # Tamaño de letra\n              check_overlap = TRUE) + # Evita que se monten unos encima de otros\n    \n    labs(title = \"Boxplot: Goles (Top Goleadores)\", x = NULL, y = \"Goles\") +\n    theme_minimal()\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-018.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "asistencias-etiquetamos-a-los-que-tienen-12-asistencias",
+    "title": "2. Asistencias (Etiquetamos a los que tienen > 12 asistencias)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS",
+      "2. Asistencias (Etiquetamos a los que tienen > 12 asistencias)"
+    ],
+    "paragraphs": [
+      "Lo mismo con las asistencias, marcamos a los que tienen más de 12 asistencias, por considerarlos asistentes superlativos. Vemos como la caja está entre 0 y 4 aproximadamente, estando los jugadores con 5 o más asistencias por encima entre el 25% de mejores asistentes."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data, aes(x = \"\", y = assists_abs)) +\n    geom_boxplot(fill = \"#2980B9\", color = \"black\", outlier.colour = \"red\", outlier.shape = 16) +\n    \n    geom_text(data = subset(final_data, assists_abs > 12), \n              aes(label = name), \n              nudge_x = 0.2, \n              size = 3,\n              check_overlap = TRUE) +\n    \n    labs(title = \"Boxplot: Asistencias (Top Asistentes)\", x = NULL, y = \"Asistencias\") +\n    theme_minimal()\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-019.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "porterías-a-cero-etiquetamos-15",
+    "title": "3. Porterías a Cero (Etiquetamos > 15)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS",
+      "3. Porterías a Cero (Etiquetamos > 15)"
+    ],
+    "paragraphs": [
+      "Para este gráfico seleccionamos únicamente la los porteros, ya que para este dataframe son los únicos a los que se les atribuye la portería a cero. Nuevamente se muestran los atípicos, porteros con más de 15 paradas, en orden descendente, mostrando una caja mayor por la omisión del resto de jugadores."
+    ],
+    "code": [
+      "print(\n  final_data |>\nfilter(position_group == \"Goalkeeper\") |>\nggplot(aes(x = \"\", y = clean_sheets_abs)) +\ngeom_boxplot(fill = \"#2980B9\", color = \"black\", outlier.colour = \"red\", outlier.shape = 16) +\n    \n    geom_text(data = subset(final_data, clean_sheets_abs > 20), \n              aes(label = name), \n              nudge_x = 0.2, \n              size = 3,\n              check_overlap = TRUE) +\n    \n    labs(title = \"Boxplot: Porterías a Cero (Top Porteros)\", x = NULL, y = \"Clean Sheets\") +\n    theme_minimal()\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-020.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "valor-de-mercado-1",
+    "title": "4. Valor de Mercado",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.1 Análisis Univariante",
+      "Grupo 5: ANÁLISIS DE ATÍPICOS CON ETIQUETAS",
+      "4. Valor de Mercado"
+    ],
+    "paragraphs": [
+      "Aquí mostramos una distribución del valor de mercado, aquí la caja está practicamente pegada al 0, ya que de la mediana (800.000€) a los valores más grandes hay una diferencia de casi 200.000.000 €. Mostramos como atípicos en orden descendente a todos con un valor de al menos 100.000.000€."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% filter(current_value > 0), aes(x = \"\", y = current_value)) +\n    geom_boxplot(fill = \"#8E44AD\", color = \"black\", outlier.colour = \"red\", outlier.shape = 16) +\n    \n    # USAMOS geom_text_repel EN LUGAR DE geom_text\n    geom_text_repel(data = subset(final_data, current_value > 99999999), \n                    aes(label = name),\n                    size = 3,\n                    box.padding = 0.5,    \n                    point.padding = 0.3,  \n                    force = 10,           \n                    segment.color = 'grey50') + \n    \n    scale_y_continuous(labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    labs(title = \"Boxplot: Valor de Mercado 2023\", x = NULL, y = \"Euros\") +\n    theme_minimal()\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-021.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "análisis-bivariante",
+    "title": "4.2 Análisis Bivariante",
+    "level": 2,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "análisis-dinámicas-del-juego",
+    "title": "4.2.1 Análisis Dinámicas del Juego",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "el-físico-vs-la-táctica-altura-por-posición",
+    "title": "1. EL FÍSICO VS LA TÁCTICA: Altura por Posición",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "1. EL FÍSICO VS LA TÁCTICA: Altura por Posición"
+    ],
+    "paragraphs": [
+      "El gráfico muestra como las cajas más altas, se muestran para porteros, defensas centrales y a continuación delanteros centros, estando estos algo más alejados. Los gráficos muestran como la mediana de los porteros y los centrales está por encima de 185cm, mientras que los delanteros centrales están por debajo de 180cm, por otra parte, es interesante ver una similitud asombrosa entre laterales y mediocentros con el 75% de las muestras intermedias entre 175 y 182, y por último, la caja más baja es la de los extremos, la cual tiene una mediana de aproximadamente 176cm.",
+      "Esto responde a una necesidad de posición, los porteros y los centrales, necesitan ser altos y fuertes, unos para tapar mayor área de la portería más fácilmente y otros para ganar duelos individuales frente a los delanteros centros, por otra parte, los delanteros centros, aunque altos, no son tanto como los dos grupos anteriores, debido a que también necesitan otras cualidades como buen primer toque, finalización, disparo y algo de técnica. En cuanto a los laterales y a los mediocentros, son jugadores equilibrados físicamente, con requerimientos técnicos diferentes, los laterales necesitan velocidad punta y resistencia para aguantar todo el partido y frenar a los extremos, mientras que los mediocentros necesitan visión de juego y técnica. Por último, el grupo más bajo, los extremos, tienen estas características en respuestas a las soluciones que aportan, jugadores rápidos, escurridizos, con técnica y habilidad explosiva, buen disparo, buen pase…"
+    ],
+    "code": [
+      "print(\n  final_data %>%\n    mutate(rol_tactico = case_when(\n      position == \"Goalkeeper\" ~ \"1. Goalkeeper\",\n      position == \"Defender Centre-Back\" ~ \"2. Centre-Back\",\n      position %in% c(\"Defender Left-Back\", \"Defender Right-Back\") ~ \"3. Full-Backs\",\n      position %in% c(\"midfield-DefensiveMidfield\", \"midfield-CentralMidfield\",\"midfield-LeftMidfield\", \"midfield\",\"midfield-RightMidfield\", \"midfield-AttackingMidfield\") ~ \"4. Midfield\",\n      position %in% c(\"Attack-LeftWinger\", \"Attack-RightWinger\", \"Attack-SecondStriker\") ~ \"5. Wingers and second strikers\",\n      position == \"Attack Centre-Forward\" ~ \"6. Centre-Forward\",\n      TRUE ~ NA_character_\n    )) %>% \n    filter(!is.na(rol_tactico)) %>%\n\n    # Pasamos los datos a ggplot\n    ggplot(aes(x = rol_tactico, y = height, fill = rol_tactico)) +\n      geom_boxplot(color = \"black\", alpha = 0.8, show.legend = FALSE) +\n      scale_fill_brewer(palette = \"Set2\") +\n      labs(title = \"1. El Físico vs La Táctica: Altura por Rol\",\n           x = \"Rol Táctico\", \n           y = \"Altura (cm)\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-022.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "fragilidad-edad-vs-lesiones",
+    "title": "2. FRAGILIDAD: Edad vs Lesiones",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "2. FRAGILIDAD: Edad vs Lesiones"
+    ],
+    "paragraphs": [
+      "El gráfico relaciona la edad con las lesiones, partiendo de la hipótesis de que un cuerpo más joven se lesiona menos, el gráfico muestra una ligera curva creciente a partir de los 21 años, lo que puede indicar que a mayor edad, mayor probabilidad de lesión, sin embargo, también hay que tener en cuenta que los jugadores menores de 21 años, salvo excepciones como Lamine Yamal, no tienen la misma continuidad que los jugadores más consolidados de mayor edad, los cuales juegan más partidos, aumentando las probabilidades de lesión."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\nprint(\n  ggplot(final_data %>% filter(games_injured >= 0), aes(x = age, y = games_injured)) +\n    geom_jitter(alpha = 0.3, color = \"#C0392B\", width = 0.3) + \n    geom_smooth(method = \"loess\", color = \"black\", linewidth = 1, se = FALSE) +\n    labs(title = \"2. Desgaste Físico: Edad vs. Partidos Lesionado\",\n         subtitle = \"Tendencia de lesiones a lo largo de la carrera\",\n         x = \"Edad\", \n         y = \"Partidos Perdidos por Lesión\") +\n    scale_x_continuous(breaks = seq(15, 45, 2)) +\n    mi_tema\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-023.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "tarjetas-amarillas-vs-rol",
+    "title": "3.Tarjetas Amarillas vs Rol",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "3.Tarjetas Amarillas vs Rol"
+    ],
+    "paragraphs": [
+      "Fijandonos en las cajas, los centrales son los que asumen más riesgo y reciben más amarillas, explicado por estar expuesto a las acciones más prometedoras de los ataques rivales, que son más fáciles de ser castigadas con tarjeta. Tras estos, se encuentran los mediocentros, muchas veces obligados a hacer lo que se conoce como falta táctica, para frenar un contraataque del rival tras una pérdida de balón. Por último, la caja más cerca del 0 es la de los porteros, quienes suelen recibir tarjetas cuando hacen falta dentro del área, castigandose con penalti, o cuando el arbitro considera que están perdiendo tiempo de forma deliberada."
+    ],
+    "code": [
+      "print(\n  final_data %>%\n    mutate(rol_tactico = case_when(\n      position == \"Goalkeeper\" ~ \"1. Goalkeeper\",\n      position == \"Defender Centre-Back\" ~ \"2. Centre-Back\",\n      position %in% c(\"Defender Left-Back\", \"Defender Right-Back\") ~ \"3. Full-Backs\",\n      position %in% c(\"midfield-DefensiveMidfield\", \"midfield-CentralMidfield\",\"midfield-LeftMidfield\", \"midfield\",\"midfield-RightMidfield\", \"midfield-AttackingMidfield\") ~ \"4. Midfield\",\n      position %in% c(\"Attack-LeftWinger\", \"Attack-RightWinger\", \"Attack-SecondStriker\") ~ \"5. Wingers and second strikers\",\n      position == \"Attack Centre-Forward\" ~ \"6. Centre-Forward\",\n      TRUE ~ NA_character_\n    )) %>% \n    filter(!is.na(rol_tactico)) %>%\n\n    ggplot(aes(x = rol_tactico, y = yellow_cards_abs, fill = rol_tactico)) +\n      geom_boxplot(color = \"black\", alpha = 0.8, outlier.color = \"red\", show.legend = FALSE) +\n      scale_fill_brewer(palette = \"Set2\") +\n      labs(title = \"3. Disciplina: Tarjetas Amarillas por Rol Táctico\",\n           x = \"Rol Táctico\", \n           y = \"Tarjetas Amarillas Acumuladas\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-024.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "experiencia-vs-juventud-edad-por-rol-táctico",
+    "title": "4. EXPERIENCIA VS JUVENTUD: Edad por Rol Táctico",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "4. EXPERIENCIA VS JUVENTUD: Edad por Rol Táctico"
+    ],
+    "paragraphs": [
+      "Este gráfico muestra cajas muy parecidas, la caja más larga es la de los porteros, lo que significa que no sufren de obsolescencia, pueden rendir hasta más tarde, y las cajas más cortas son la de los extremos y laterales, dependiendo estos mucho de su físico y velocidad, con una mediana cercana a 26 años, tienen una carrera más corta en comparación al resto de posiciones, con la edad, hay casos de estos laterales que se convierten a centrales."
+    ],
+    "code": [
+      "print(\n  final_data %>%\n    mutate(rol_tactico = case_when(\n      position == \"Goalkeeper\" ~ \"1. Goalkeeper\",\n      position == \"Defender Centre-Back\" ~ \"2. Centre-Back\",\n      position %in% c(\"Defender Left-Back\", \"Defender Right-Back\") ~ \"3. Full-Backs\",\n      position %in% c(\"midfield-DefensiveMidfield\", \"midfield-CentralMidfield\",\"midfield-LeftMidfield\", \"midfield\",\"midfield-RightMidfield\", \"midfield-AttackingMidfield\") ~ \"4. Midfield\",\n      position %in% c(\"Attack-LeftWinger\", \"Attack-RightWinger\", \"Attack-SecondStriker\") ~ \"5. Wingers and second strikers\",\n      position == \"Attack Centre-Forward\" ~ \"6. Centre-Forward\",\n      TRUE ~ NA_character_\n    )) %>% \n    filter(!is.na(rol_tactico)) %>%\n\n    ggplot(aes(x = rol_tactico, y = age, fill = rol_tactico)) +\n      geom_boxplot(color = \"black\", alpha = 0.8, outlier.color = \"red\", show.legend = FALSE) +\n      scale_fill_brewer(palette = \"Set2\") +\n      labs(title = \"Experiencia vs. Juventud: Edad por Rol Táctico\",\n           subtitle = \"Los extremos necesitan juventud; porteros y centrales tiran de experiencia\",\n           x = \"Rol Táctico\", \n           y = \"Edad (Años)\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-025.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "creadores-vs-finalizadores-goles-vs-asistencias",
+    "title": "5. CREADORES VS FINALIZADORES: Goles vs Asistencias",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "5. CREADORES VS FINALIZADORES: Goles vs Asistencias"
+    ],
+    "paragraphs": [
+      "Este gráfico de dispersión muestra como los atacantes suelen marcar más goles que asistencias, y los mediocentros suelen dar más asistencias que goles anotados, sin embargo, cuando nos vamos nuevamente a los valores atípicos, vemos que muchos delanteros de clase mundial también generan muchas asistencias, potenciados también por el buen hacer de su equipo."
+    ],
+    "code": [
+      "print(\n  ggplot(final_data %>% filter(goals_abs > 0 | assists_abs > 0, !is.na(position_group)), \n         aes(x = goals_abs, y = assists_abs, color = position_group)) +\n    geom_point(alpha = 0.6, size = 2) +\n    geom_abline(intercept = 0, slope = 1, linetype = \"dashed\", color = \"grey50\") +\n    labs(title = \"4. Rol Ofensivo: Goles vs. Asistencias\",\n         subtitle = \"Por encima de la línea: Creadores. Por debajo: Finalizadores.\",\n         x = \"Goles Totales\", \n         y = \"Asistencias Totales\",\n         color = \"Posición\") +\n    theme_minimal()\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-026.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "amarillas-por-liga",
+    "title": "6. Amarillas por Liga",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "6. Amarillas por Liga"
+    ],
+    "paragraphs": [
+      "Con este gráfico buscamos ver en que liga se señalan más tarjetas, siendo la championship la primera en este registro, motivada por tener dos equipos más que los siguientes como La Liga, Serie A y cuatro equipos más que el cuarto, la liga portuguesa."
+    ],
+    "code": [
+      "print(\n  final_data %>% \n    filter(!is.na(league)) %>% \n    group_by(league) %>% \n    summarise(total_amarillas = sum(yellow_cards_abs, na.rm = TRUE)) %>% \n    \n    ggplot(aes(x = reorder(league, -total_amarillas), y = total_amarillas, fill = league)) +\n      geom_col(color = \"black\", width = 0.6, show.legend = FALSE) + \n      geom_text(aes(label = total_amarillas), vjust = -0.5, fontface = \"bold\", size = 4) +\n      \n      # CAMBIO AQUÍ: Paleta Viridis (acepta infinitos colores y es apta para daltónicos)\n      scale_fill_viridis_d() + \n      \n      labs(title = \"Yellow cards per league\",\n           x = \"League\", \n           y = \"Yellow cards\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-027.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "b.-tasa-real-tarjetas-amarillas-por-partido-normalizado",
+    "title": "6.B. TASA REAL: Tarjetas Amarillas por Partido (Normalizado)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "6.B. TASA REAL: Tarjetas Amarillas por Partido (Normalizado)"
+    ],
+    "paragraphs": [
+      "Con este gráfico normalizamos la variable y comparamos las amarillas por partido, el gráfico muestra que las ligas con más amarillas son la portuguesa, la brasileña y la argentina, ligas a priori algo físicas y con mayor cantidad de faltas, seguido inmediatamente de La Liga, muy lejos de la Premier league, Ligue 1 o Bundesliga, lo cual, podría indicar que en España la tarjeta amarilla es más barata."
+    ],
+    "code": [
+      "print(\n  final_data %>%\n    group_by(league) %>% \n    summarise(\n      total_amarillas = sum(yellow_cards_abs, na.rm = TRUE),\n      total_minutos = sum(minutes.played, na.rm = TRUE),\n      \n      # FÓRMULA MÁGICA: Partidos = Minutos / (22 jugadores * 90 mins)\n      partidos_jugados = total_minutos / (22 * 90),\n      \n      # Tasa: Amarillas por cada partido\n      amarillas_por_partido = total_amarillas / partidos_jugados\n    ) %>% \n    \n    # Pasamos al gráfico ordenando por la nueva Tasa\n    ggplot(aes(x = reorder(league, -amarillas_por_partido), y = amarillas_por_partido, fill = league)) +\n      geom_col(color = \"black\", width = 0.6, show.legend = FALSE) + \n      \n      # Redondeamos a 2 decimales para que el texto quede limpio\n      geom_text(aes(label = round(amarillas_por_partido, 2)), vjust = -0.5, fontface = \"bold\", size = 4) +\n      \n      scale_fill_viridis_d() + \n      labs(title = \"La Tasa Real: Tarjetas Amarillas POR PARTIDO\",\n           x = \"Liga\", \n           y = \"Media de Tarjetas por Partido\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-028.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "goles-por-liga",
+    "title": "7. Goles por liga",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.1 Análisis Dinámicas del Juego",
+      "7. Goles por liga"
+    ],
+    "paragraphs": [
+      "Este gráfico muestra cuantos goles se marcan por partido de media en cada liga, siendo la ganadora La Bundesliga, con sonadas goleadas del Bayern Munchen, seguido de la liga Austríaca, con equipos como el RB salzburg o Sturm Graz, muy superiores al resto. Con jugadores que forman parte del RB group en el caso del salzburg, como fue en su dia Erling Haaland. Este gráfico es útil para aquellos aficionados que quieran ver partidos freneticos con mayor cantidad de goles que La Liga, una liga más vistosa en cuanto a lo táctico con la emergencia de entrenadores con estilos de juego muy marcados, como Eder Sarabia, Bordalás, Hansi Flick o Iñigo Pérez."
+    ],
+    "code": [
+      "print(\n  final_data %>% \n    filter(!is.na(league), minutes.played > 0) %>% \n    group_by(league) %>% \n    summarise(\n      total_goles = sum(goals_abs, na.rm = TRUE),\n      total_minutos = sum(minutes.played, na.rm = TRUE),\n      \n      # La misma fórmula mágica para saber los partidos reales\n      partidos_jugados = total_minutos / (22 * 90),\n      \n      # Tasa: Goles por partido\n      goles_por_partido = total_goles / partidos_jugados\n    ) %>% \n    \n    ggplot(aes(x = reorder(league, -goles_por_partido), y = goles_por_partido, fill = league)) +\n      geom_col(color = \"black\", width = 0.6, show.legend = FALSE) + \n      geom_text(aes(label = round(goles_por_partido, 2)), vjust = -0.5, fontface = \"bold\", size = 4) +\n      \n      # Usamos la paleta \"plasma\" (tonos cálidos) para representar el \"calor\" del gol\n      scale_fill_viridis_d(option = \"plasma\") + \n      \n      labs(title = \"El Espectáculo: Goles por Partido por Liga\",\n           subtitle = \"Calculado según el tiempo de juego real (Normalizado)\",\n           x = \"Liga\", \n           y = \"Media de Goles por Partido\") +\n      mi_tema +\n      theme(axis.text.x = element_text(angle = 45, hjust = 1))\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-029.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "análisis-finaciero",
+    "title": "4.2.2 Análisis finaciero",
+    "level": 3,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "factores-financieros-variables-vs.-valor-de-mercado",
+    "title": "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+    "level": 4,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)"
+    ],
+    "paragraphs": [],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "matriz-de-correlación-definitiva-incluyendo-ligas",
+    "title": "1. MATRIZ DE CORRELACIÓN DEFINITIVA (Incluyendo Ligas)",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "1. MATRIZ DE CORRELACIÓN DEFINITIVA (Incluyendo Ligas)"
+    ],
+    "paragraphs": [
+      "Este mapa de correlaciones nos muestra como se relaciona la variable current value con el resto de variables, vemos que tiene correlación negativa con la edad, prácticamente insignificante (-0,06), lo cual sugiere que a mayor edad, menor valor, también introducimos una variable edad cuadrática ya que la edad muestra una gráfica cuádratica (siguiente gráfico). Por otra parte, las correlaciones más altas son los minutos jugados (0,42), goles y asistencias (0,45), coeficiente liga (0,45), partidos jugados (0,42), premios (0,3), goles (0,4), asistencias (0,44) y tarjetas amarillas (0,29), este último, es interesante, ya que el coeficiente positivo parece indicar que cuantas más amarillas ve un jugador más vale el mismo, y esto no es asi, sino que las amarillas están muy correlacionadas con los minutes.played (0,72)"
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nlibrary(ggcorrplot)",
+      "Warning: package 'ggcorrplot' was built under R version 4.5.2",
+      "print(\n  final_data %>% \n    mutate(age_squared = age^2) %>%\n    \n    # 2. Seleccionamos las métricas + las nuevas ligas numéricas\n    select(current_value, age,age_squared, height, minutes.played, goals_assists_abs, \n          league_rating, appearance, games_injured, days_injured, award, goals_abs, assists_abs, yellow_cards_abs) %>% \n    \n    # 3. Quitamos los NAs y calculamos la matriz\n    na.omit() %>% \n    cor() %>% \n    \n    # 4. El Gráfico\n    ggcorrplot(method = \"square\", \n               type = \"lower\",          \n               lab = TRUE,              \n               lab_size = 3, \n               colors = c(\"#C0392B\", \"white\", \"#2980B9\"), \n               title = \"Mapa de Calor: Correlaciones con el Valor de Mercado (Incluyendo Ligas)\") +\n    mi_tema\n)",
+      "Warning: `aes_string()` was deprecated in ggplot2 3.0.0.\nℹ Please use tidy evaluation idioms with `aes()`.\nℹ See also `vignette(\"ggplot2-in-packages\")` for more information.\nℹ The deprecated feature was likely used in the ggcorrplot package.\n  Please report the issue at <https://github.com/kassambara/ggcorrplot/issues>."
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-030.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "rendimiento-vs-valor-el-precio-del-gol",
+    "title": "2. RENDIMIENTO VS VALOR: El Precio del Gol",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "2. RENDIMIENTO VS VALOR: El Precio del Gol"
+    ],
+    "paragraphs": [
+      "El gráfico muestra una relación positiva, con un coeficiente de 0,4 , lo que indica que a mayor cantidad de goles, mayor valor de mercado."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\nsuppressWarnings(\n\nprint(\n  ggplot(final_data %>% filter(current_value > 0), \n         aes(x = goals_assists_abs, y = current_value)) +\n    geom_point(alpha = 0.5, color = \"#2980B9\") + \n    # Línea de tendencia lineal para ver la subida\n    geom_smooth(method = \"lm\", color = \"red\", se = FALSE, linewidth = 1) + \n    # Usamos escala logarítmica porque hay jugadores de 1M y de 180M (como Mbappé)\n    scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    labs(title = \"Rendimiento vs. Valor: El Precio del Gol\", \n         subtitle = \"A mayor participación en goles, mayor valor de mercado (escala Log)\",\n         x = \"Goles + Asistencias (Totales)\", \n         y = \"Valor de Mercado (Log)\") + \n    mi_tema\n)\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-031.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "edad-vs-valor-la-curva-de-la-carrera",
+    "title": "3. EDAD VS VALOR: La Curva de la Carrera",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "3. EDAD VS VALOR: La Curva de la Carrera"
+    ],
+    "paragraphs": [
+      "Vemos una curva marcada, con un punto de inflexión aproximadamente en 27 años, cuando un jugador cumple 27 años, su valor comienza a bajar."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nprint(\n  ggplot(final_data %>% filter(current_value > 0), aes(x = age, y = current_value)) +\n    geom_jitter(alpha = 0.3, color = \"#8E44AD\", width = 0.3) +\n    # Línea \"loess\" para capturar la curva de campana (subida en juventud, caída en vejez)\n    geom_smooth(method = \"loess\", color = \"black\", se = FALSE, linewidth = 1) +\n    scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    scale_x_continuous(breaks = seq(15, 45, 2)) +\n    labs(title = \"Biología vs. Mercado: Edad vs. Valor\", \n         subtitle = \"El pico financiero (Prime) se sitúa alrededor de los 25-27 años\",\n         x = \"Edad\", \n         y = \"Valor de Mercado (Log)\") + \n    mi_tema\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-032.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "el-impuesto-premier-valor-de-mercado-por-liga-top",
+    "title": "4. EL IMPUESTO PREMIER: Valor de Mercado por Liga Top",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "4. EL IMPUESTO PREMIER: Valor de Mercado por Liga Top"
+    ],
+    "paragraphs": [
+      "En el diagrama de cajas vemos como los jugadores de la premier tienen un valor de mercado mediano mayor que el resto de las ligas. Mientras que el valor mediano de la premier es aproximadamente 20 millones de euros, el de la Serie A, Bundesliga, La Liga y Ligue 1 es de 5 millones."
+    ],
+    "code": [
+      "print(\n  final_data %>% \n    # Filtramos las 5 Grandes Ligas para ver la comparación más clara\n    filter(league %in% c(\"Premier League\", \"La Liga\", \"Serie A\", \"Bundesliga\", \"Ligue 1\"), current_value > 0) %>% \n    \n    # Ordenamos las ligas por la mediana del valor de mercado\n    ggplot(aes(x = reorder(league, current_value, FUN = median, na.rm = TRUE), y = current_value, fill = league)) +\n      geom_boxplot(alpha = 0.7, outlier.alpha = 0.3) +\n      scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n      scale_fill_viridis_d() +\n      coord_flip() + # Giramos para leer mejor\n      labs(title = \"El 'Impuesto Premier': Valor de Mercado por Liga\",\n           subtitle = \"Distribución del precio en las 5 Grandes Ligas (Escala Log)\",\n           x = NULL, y = \"Valor de Mercado (Log)\") + \n      mi_tema + theme(legend.position = \"none\")\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-033.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "el-precio-del-gol-vs-el-muro-valor-de-mercado-por-posición",
+    "title": "5. EL PRECIO DEL GOL VS EL MURO: Valor de Mercado por Posición",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "5. EL PRECIO DEL GOL VS EL MURO: Valor de Mercado por Posición"
+    ],
+    "paragraphs": [
+      "En cuanto al valor de mercado repartido entre las posiciones, todas las cajas tienen una apariencia similar, sin embargo, la caja de los porteros está ligeramente más baja, por lo que los valores del valor de mercado tienden a ser menores para los porteros, y los valores atípicos, por encima de 100 millones, son más presentes en los delanteros centros."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nsuppressWarnings(\nprint(\n  final_data %>%\n    # Reutilizamos tu clasificación de roles tácticos al vuelo\n    mutate(rol_tactico = case_when(\n      position == \"Goalkeeper\" ~ \"1. Goalkeeper\",\n      position == \"Defender Centre-Back\" ~ \"2. Centre-Back\",\n      position %in% c(\"Defender Left-Back\", \"Defender Right-Back\") ~ \"3. Full-Backs\",\n      position %in% c(\"midfield-DefensiveMidfield\", \"midfield-CentralMidfield\", \"midfield\") ~ \"4. Midfield\",\n      position %in% c(\"Attack-LeftWinger\", \"Attack-RightWinger\", \"Attack-SecondStriker\", \"midfield-AttackingMidfield\") ~ \"5. Attackers/Wingers\",\n      position == \"Attack Centre-Forward\" ~ \"6. Centre-Forward\",\n      TRUE ~ NA_character_\n    )) %>% \n    filter(!is.na(rol_tactico)) %>% \n    \n    ggplot(aes(x = rol_tactico, y = current_value, fill = rol_tactico)) +\n      geom_boxplot(width = 0.1, fill = \"white\", color = \"black\") + # Un mini boxplot dentro\n      scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n      scale_fill_brewer(palette = \"Set2\") +\n      labs(title = \"La Prima Ofensiva: Valor de Mercado por Posición\",\n           subtitle = \"Los atacantes tienen los picos de valor más altos del mercado\",\n           x = \"Rol Táctico\", y = \"Valor de Mercado (Log)\") + \n      mi_tema + theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = \"none\")\n)\n)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-034.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "fiabilidad-vs-valor-minutos-jugados-vs.-precio",
+    "title": "6. FIABILIDAD VS VALOR: Minutos Jugados vs. Precio",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "6. FIABILIDAD VS VALOR: Minutos Jugados vs. Precio"
+    ],
+    "paragraphs": [
+      "El el gráfico de dispersión observamos que a mayor minutos jugados, mayor valor, por lo que la continuidad en un equipo es un factor importante para aumentar el valor de un jugador."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nprint(\n  ggplot(final_data %>% filter(current_value > 0), \n         aes(x = minutes.played, y = current_value)) +\n    geom_point(alpha = 0.3, color = \"#27AE60\") + \n    geom_smooth(method = \"gam\", color = \"black\", se = FALSE, linewidth = 1) + # Línea de tendencia flexible\n    scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    labs(title = \"La Fiabilidad se Paga: Minutos Jugados vs. Valor\", \n         subtitle = \"El valor sube drásticamente a partir de los 1.500 minutos (titularidad consolidada)\",\n         x = \"Minutos Jugados en la Temporada\", \n         y = \"Valor de Mercado (Log)\") + \n    mi_tema\n)",
+      "`geom_smooth()` using formula = 'y ~ s(x, bs = \"cs\")'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-035.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "el-coste-de-la-fragilidad-partidos-perdidos-por-lesión-vs.-valor",
+    "title": "7. EL COSTE DE LA FRAGILIDAD: Partidos Perdidos por Lesión vs. Valor",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "7. EL COSTE DE LA FRAGILIDAD: Partidos Perdidos por Lesión vs. Valor"
+    ],
+    "paragraphs": [
+      "Este gráfico es confuso, a pesar de que presente una pendiente positiva, los valores, se agrupan mucho a la izquierda, una razón por la que las lesiones tienen correlación positiva con el precio, es por que los jugadores de clase mundial, que juegan muchos partidos por temporada, se pierden más partidos, como fue el caso de Pedri, que tras jugar más de 70 partidos en 2021, encadenó lesiones que no le permitieron tener continuidad."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\nsuppressWarnings(\nprint(\n  ggplot(final_data %>% filter(current_value > 0, !is.na(games_injured)), \n         aes(x = games_injured, y = current_value)) +\n    \n    # Usamos geom_jitter (rojo) para dispersar un poco los puntos\n    geom_jitter(alpha = 0.3, color = \"#E74C3C\", width = 0.3) + \n    \n    # Línea de tendencia para ver el castigo del mercado\n    geom_smooth(method = \"lm\", color = \"black\", se = FALSE, linewidth = 1) + \n    \n    scale_x_continuous(limits = c(0, 100)) +\n    \n    scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n    \n    labs(title = \"El Coste de la Fragilidad: Lesiones vs. Valor de Mercado\", \n         subtitle = \"El mercado castiga el riesgo: a más partidos perdidos por lesión, menor cotización\",\n         x = \"Total de Partidos Perdidos por Lesión\", \n         y = \"Valor de Mercado (Log)\") + \n    mi_tema\n)\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-036.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "la-eficiencia-goles-cada-90-minutos-vs.-valor-filtro-450-mins",
+    "title": "8. LA EFICIENCIA: Goles cada 90 Minutos vs. Valor (Filtro > 450 mins)",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "8. LA EFICIENCIA: Goles cada 90 Minutos vs. Valor (Filtro > 450 mins)"
+    ],
+    "paragraphs": [
+      "Vemos que el promedio goleador por cada 90 minutos también influye a la alta en el precio, sin embargo, como se mencionó al principio, es interesante entender que los jugadores clase mundial que juegan más de 60 partidos, no pueden mantener en la mayoría de casos un ratio de gol por partido, ya que eso implicaría 60 goles por temporada, números solo vistos con Messi y Cristiano Ronaldo, los mejores jugadores de la época reciente, a años luz del resto."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nprint(\n  final_data %>% \n    filter(current_value > 0, minutes.played >= 450) %>% \n    # Creamos la métrica reina del Scouting: Goles cada 90 minutos\n    mutate(goals_per_90 = (goals_abs / minutes.played) * 90) %>% \n    \n    ggplot(aes(x = goals_per_90, y = current_value)) +\n      geom_point(alpha = 0.5, color = \"#8E44AD\") + \n      geom_smooth(method = \"lm\", color = \"black\", se = FALSE, linewidth = 1) + \n      scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n      labs(title = \"Eficiencia Ofensiva: Goles por 90 Minutos vs. Valor\", \n           subtitle = \"Excluyendo jugadores con menos de 450 minutos jugados\",\n           x = \"Goles cada 90 Minutos Jugados\", \n           y = \"Valor de Mercado (Log)\") + \n      mi_tema\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-037.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "el-valor-del-muro-porterías-a-cero-vs.-valor-solo-porteros-correlación-de-05266",
+    "title": "9. EL VALOR DEL MURO: Porterías a Cero vs. Valor (SOLO PORTEROS), correlación de 0,5266",
+    "level": 5,
+    "path": [
+      "4º Análisis exploratorio de datos",
+      "4.2 Análisis Bivariante",
+      "4.2.2 Análisis finaciero",
+      "4.2. FACTORES FINANCIEROS (Variables vs. Valor de Mercado)",
+      "9. EL VALOR DEL MURO: Porterías a Cero vs. Valor (SOLO PORTEROS), correlación de 0,5266"
+    ],
+    "paragraphs": [
+      "Las porterías a cero son un gran elevador de valor de mercado para los porteros como se puede ver en el gráfico, sin embargo, hay que tener en cuenta que muchas veces, que un portero encaje pocos goles, depende muchísimo de la calidad defensiva del equipo, equipos de baja tabla con porteros excelentes que paran mucho, no consiguen tantas porterías a cero como equipos de la zona alta que encajan pocos goles por ser muy superiores al rival. Por ello, esta estadística vendría a reforzar a los porteros de equipos grandes, donde también es cierto, que un error te condena mucho más que ese mismo error en un equipo de la zona baja."
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nprint(\n  final_data %>% \n    filter(current_value > 0, position == \"Goalkeeper\") %>% \n    \n    ggplot(aes(x = clean_sheets_abs, y = current_value)) +\n      geom_point(alpha = 0.6, color = \"#2980B9\", size = 2) + \n      geom_smooth(method = \"lm\", color = \"red\", se = FALSE, linewidth = 1) + \n      scale_y_continuous(trans = \"log10\", labels = label_number(suffix = \"M\", scale = 1e-6)) +\n      labs(title = \"El 'Gol' del Portero: Porterías a Cero (Clean Sheets) vs. Valor\", \n           subtitle = \"Análisis exclusivo para la posición de Guardameta\",\n           x = \"Número de Porterías a Cero (Temporada)\", \n           y = \"Valor de Mercado (Log)\") + \n      mi_tema\n)",
+      "`geom_smooth()` using formula = 'y ~ x'"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-038.png"
+      }
+    ],
+    "tables": []
+  },
+  {
+    "id": "º-proceso-de-modelización",
+    "title": "5º Proceso de modelización",
+    "level": 1,
+    "path": [
+      "5º Proceso de modelización"
+    ],
+    "paragraphs": [
+      "La elección de los algoritmos responde a la naturaleza de los datos y al objetivo del estudio. Descartamos KNN por su dificultad para interpretar qué variables influyen en el precio (esencial en este trabajo) y la Regresión Logística por tratarse de una predicción numérica continua, no binaria. Finalmente, optamos por una estrategia complementaria:",
+      "LASSO (Enfoque Explicativo y Selección) Ante la alta correlación entre variables (ej: minutos jugados y partidos), la regresión lineal simple sufría de multicolinealidad. Elegimos LASSO porque soluciona esto automáticamente: penaliza y elimina las variables redundantes (ruido), dejando solo las significativas. Nos aporta transparencia, nos permite ver la fórmula exacta del mercado.",
+      "Random Forest (Enfoque Predictivo y No Lineal) El mercado del fútbol es complejo y no siempre sigue reglas rectas. Elegimos Random Forest para capturar relaciones no lineales e interacciones que LASSO no ve (ej: cómo la edad afecta distinto a un delantero que a un portero. Ganamos en precisión, reduce la varianza al promediar cientos de árboles y minimiza el error de predicción."
+    ],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "regresión-lineal-y-lasso",
+    "title": "REGRESIÓN LINEAL Y LASSO",
+    "level": 3,
+    "path": [
+      "5º Proceso de modelización",
+      "REGRESIÓN LINEAL Y LASSO"
+    ],
+    "paragraphs": [
+      "Primer modelo de regresión lineal, únicamente incluimos las variables que la matriz de correlaciones nos indica, sin usar relaciones entre variables, todavía. Un apunte importante es que para este modelo, dejaremos fuera a los porteros por incapacidad de juzgar a estos jugadores por las mismas variables (goles y asistencias principalmente). Por ello, los modelos se limitan a jugadores de campo.",
+      "Los coeficientes estimados miden el impacto marginal de las variables en el valor de los jugadores, manteniendo el resto constante, como la variable está en escala logarítmica, mide cambios porcentuales estimados. vemos que la edad tiene coeficiente positivo, pero la edad cuadrática negativo, corrigiendo a la primera cuando el jugador pasa a su etapa de madurez, estos dos coeficientes deben interpretarse juntos. En cuanto a los minutos, su coeficiente es menor ya que los valores que toman los minutos jugados, el rango, son mucho más altos. El coeficiente positivo de la liga significa que jugar en una liga más prestigiosa, con mayor coeficiente, dispara el valor de mercado de un jugador. Lo mismo sucede con los premios.",
+      "Por otra parte, el modelo atribuye un mayor coeficiente a las asistencias que a los goles, esto puede ser debido a que los goles son eventos más comunes en los delanteros y menos frecuentes en el resto, mientras que las asistencias se reparten más entre los jugadores de campo.",
+      "Por último, todas estas variables eran significativas, por lo que tienen un impacto significativo en el modelo, sin embargo, la posición, tomando al defensa como índice, no tiene relevancia significativa, esto quiere decir que la posición por ella misma no determina el valor de un jugador, y que a características iguales, goles, asistencias, premios…Los extremos y laterales,seguidos de los delanteros y de los mediocentros valen menos que los defensas, lo cual tiene sentido ya que a los defensas no se les pide goles y asistencias, asi que si un defensa además de defender correctamente, consiguiera igualar cifras goleadoras similares a las de un delantero, valdría mucho más que el delantero.",
+      "Por último, en cuanto al coeficiente R2, este modelo explica un 59,73% de la varianza del precio de los jugadores, con un coeficiente ajustado prácticamente idéntico, lo que sugiere que no tenemos variables que atraigan ruido y empeoren el modelo. El resto del modelo no explicado está relacionado con otras variables como datos de rendimiento detallados, opiniones sobre el jugador, capacidad de liderazgo, capacidad de aparecer en los momentos importantes…",
+      "Por otra parte, el futbol no se puede explicar como una suma de estadísticas, no todos los goles valen igual, no todos los minutos cuentan lo mismo y sucesivamente. Por ello, cuando al modelo anterior le añadimos interacciones como que los goles pueden valer más dependiendo la posición, el modelo mejora, viendo que los coeficientes son negativos menos el de los extremos, quiere decir que un gol de estos vale más que el de los defensas, curioso, ya que los goles de los defensas aportan más valor que los de los delanteros o mediocentros, ya que los goles de los defensas son menos frecuentes.",
+      "Otra interacción es juntar la edad con los minutos jugados, viendo una relación negativa y un valor significativo, vemos que a mayor edad, menor valor tienen los minutos jugados, lo cual se justifica en que a mayor edad, más asentado está un jugador y menos importante son los minutos que juega, a diferencia de un jugador jóven, cuya continuidad reflejada en minutos tienen mucha más importancia. También buscamos ver que posición acusa más la edad, vemos que los centrales son los que menos dependen de su edad y los jugadoes de banda son los que más dependen de su físico condicionado a una edad joven que le proporcione plenas capacidades de velocidad, explosividad y agilidad.",
+      "La última interacción es la asistencia dependiendo de la liga, usando el coeficiente, y encontramos una anomalía, este ligero coeficiente negativo puede interpretarse como un factor de corrección del modelo para evitar sobreestimaciones extremas en las ligas top, donde ya el propio coeficiente de league_rating (+0.15) aporta la mayor parte del valor.",
+      "El modelo resultante mejora el ajuste global (R^2 = 0.6102) y reduce el Error Estándar Residual (de 1.034 a 1.018),",
+      "MODELO LASSO: INFRAVALORADOS Y SOBREVALORADOS",
+      "INFRAVALORADOS Y SOBREVALORADOS SIGNIFICATIVOS"
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nmodelo_mercado <- lm(log(current_value) ~ age + I(age^2) + minutes.played + \n                                     league_rating + games_injured + award + \n                                     goals_abs + assists_abs + rol_funcional,  \n                     data = final_data %>% filter(rol_funcional != \"Goalkeepers\",\n                                                  current_value > 0))\nsummary(modelo_mercado)",
+      "Call:\nlm(formula = log(current_value) ~ age + I(age^2) + minutes.played + \n    league_rating + games_injured + award + goals_abs + assists_abs + \n    rol_funcional, data = final_data %>% filter(rol_funcional != \n    \"Goalkeepers\", current_value > 0))\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-5.1611 -0.6778  0.0230  0.6709  4.6934 \n\nCoefficients:\n                                    Estimate   Std. Error t value\n(Intercept)                     -9.031142411  0.385725058 -23.413\nage                              0.859323742  0.024667609  34.836\nI(age^2)                        -0.016704827  0.000460044 -36.311\nminutes.played                   0.000168344  0.000008026  20.976\nleague_rating                    0.148723797  0.002635639  56.428\ngames_injured                    0.003364135  0.000514167   6.543\naward                            0.076745432  0.003244866  23.651\ngoals_abs                        0.013822823  0.002364799   5.845\nassists_abs                      0.042549383  0.003785480  11.240\nrol_funcionalFull_Backs_Wingers -0.094882179  0.029588443  -3.207\nrol_funcionalGame_Creator       -0.036510400  0.032316780  -1.130\nrol_funcionalStriker            -0.073686825  0.040556409  -1.817\n                                            Pr(>|t|)    \n(Intercept)                     < 0.0000000000000002 ***\nage                             < 0.0000000000000002 ***\nI(age^2)                        < 0.0000000000000002 ***\nminutes.played                  < 0.0000000000000002 ***\nleague_rating                   < 0.0000000000000002 ***\ngames_injured                        0.0000000000636 ***\naward                           < 0.0000000000000002 ***\ngoals_abs                            0.0000000052309 ***\nassists_abs                     < 0.0000000000000002 ***\nrol_funcionalFull_Backs_Wingers              0.00135 ** \nrol_funcionalGame_Creator                    0.25860    \nrol_funcionalStriker                         0.06927 .  \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.034 on 9177 degrees of freedom\nMultiple R-squared:  0.5973,    Adjusted R-squared:  0.5968 \nF-statistic:  1237 on 11 and 9177 DF,  p-value: < 0.00000000000000022",
+      "#| message: false\n#| warning: false\n\n\nmodelo_mercado_log <- lm(log(current_value) ~ \n          age + I(age^2) + minutes.played + league_rating + + games_injured +     award + goals_abs + assists_abs + rol_funcional +                       rol_funcional * goals_abs + rol_funcional * assists_abs + \nage * minutes.played + I(age^2) * rol_funcional + league_rating * assists_abs,\n                                              \n                         \n              data = final_data %>% filter(rol_funcional != \"Goalkeepers\", \n                                                      current_value > 0)) \n\nsummary(modelo_mercado_log)",
+      "Call:\nlm(formula = log(current_value) ~ age + I(age^2) + minutes.played + \n    league_rating + +games_injured + award + goals_abs + assists_abs + \n    rol_funcional + rol_funcional * goals_abs + rol_funcional * \n    assists_abs + age * minutes.played + I(age^2) * rol_funcional + \n    league_rating * assists_abs, data = final_data %>% filter(rol_funcional != \n    \"Goalkeepers\", current_value > 0))\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-4.5985 -0.6571  0.0216  0.6480  5.0081 \n\nCoefficients:\n                                                 Estimate    Std. Error t value\n(Intercept)                                 -10.064464819   0.417209653 -24.123\nage                                           0.861077699   0.024503463  35.141\nI(age^2)                                     -0.015730345   0.000460632 -34.149\nminutes.played                                0.000689715   0.000034693  19.880\nleague_rating                                 0.152260866   0.003229306  47.150\ngames_injured                                 0.003301542   0.000508099   6.498\naward                                         0.081065763   0.003224695  25.139\ngoals_abs                                     0.020271665   0.010899531   1.860\nassists_abs                                   0.197477747   0.042612993   4.634\nrol_funcionalFull_Backs_Wingers               0.260885158   0.086900384   3.002\nrol_funcionalGame_Creator                     0.011616393   0.092760290   0.125\nrol_funcionalStriker                          0.070527541   0.102098101   0.691\ngoals_abs:rol_funcionalFull_Backs_Wingers     0.003666603   0.011682425   0.314\ngoals_abs:rol_funcionalGame_Creator          -0.001807020   0.012190012  -0.148\ngoals_abs:rol_funcionalStriker               -0.012726740   0.011166740  -1.140\nassists_abs:rol_funcionalFull_Backs_Wingers  -0.031936208   0.012721454  -2.510\nassists_abs:rol_funcionalGame_Creator        -0.025318722   0.013279227  -1.907\nassists_abs:rol_funcionalStriker             -0.022501936   0.014322324  -1.571\nage:minutes.played                           -0.000019861   0.000001258 -15.788\nI(age^2):rol_funcionalFull_Backs_Wingers     -0.000466604   0.000114126  -4.088\nI(age^2):rol_funcionalGame_Creator           -0.000017974   0.000123055  -0.146\nI(age^2):rol_funcionalStriker                -0.000053151   0.000129975  -0.409\nleague_rating:assists_abs                    -0.001666897   0.000517816  -3.219\n                                                        Pr(>|t|)    \n(Intercept)                                 < 0.0000000000000002 ***\nage                                         < 0.0000000000000002 ***\nI(age^2)                                    < 0.0000000000000002 ***\nminutes.played                              < 0.0000000000000002 ***\nleague_rating                               < 0.0000000000000002 ***\ngames_injured                                    0.0000000000857 ***\naward                                       < 0.0000000000000002 ***\ngoals_abs                                                0.06294 .  \nassists_abs                                      0.0000036324156 ***\nrol_funcionalFull_Backs_Wingers                          0.00269 ** \nrol_funcionalGame_Creator                                0.90034    \nrol_funcionalStriker                                     0.48972    \ngoals_abs:rol_funcionalFull_Backs_Wingers                0.75364    \ngoals_abs:rol_funcionalGame_Creator                      0.88216    \ngoals_abs:rol_funcionalStriker                           0.25444    \nassists_abs:rol_funcionalFull_Backs_Wingers              0.01208 *  \nassists_abs:rol_funcionalGame_Creator                    0.05660 .  \nassists_abs:rol_funcionalStriker                         0.11619    \nage:minutes.played                          < 0.0000000000000002 ***\nI(age^2):rol_funcionalFull_Backs_Wingers         0.0000437904890 ***\nI(age^2):rol_funcionalGame_Creator                       0.88387    \nI(age^2):rol_funcionalStriker                            0.68260    \nleague_rating:assists_abs                                0.00129 ** \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.018 on 9166 degrees of freedom\nMultiple R-squared:  0.6102,    Adjusted R-squared:  0.6093 \nF-statistic: 652.3 on 22 and 9166 DF,  p-value: < 0.00000000000000022",
+      "#| message: false\n#| warning: false\n\nsuppressWarnings(\n  suppressPackageStartupMessages({\n    library(vip)\n    library(rpart.plot)\n    library(tidymodels)\n    library(glmnet) \n    library(Matrix)\n    library(tidyverse)\n  })\n)\n\nlibrary(tidymodels)\n\ndf_limpio <- final_data |>\nfilter(rol_funcional != \"Goalkeepers\", current_value > 0) |>\nmutate(log_precio = log(current_value))\n\n# PASO 1: PARTICIÓN DE DATOS Y VALIDACIÓN CRUZADA \n#Dividimos la muestra en entrenamiento (80%), para que el modelo estudie por su cuenta y el restante se usa para prueba.\n\nset.seed(123)\nparticion <- initial_split(df_limpio, prop = 0.80)\ndatos_entrenamiento <- training(particion)\ndatos_prueba <- testing(particion)\n\n# K-Fold Cross Validation, para asegurar que los datos no son memorizados.\ncv_folds <- vfold_cv(datos_entrenamiento, v = 10)\n\n\n# PASO 2: LA RECETA DE PREPROCESADO \n# Ponemos la fórmula base \nreceta_futbol <- recipe(log_precio ~ age + minutes.played + league_rating + \n                                     games_injured + award + goals_abs + \n                                     assists_abs + rol_funcional, \n                        data = datos_entrenamiento) %>%\n  step_poly(age, degree = 2) %>%\n  step_dummy(rol_funcional) %>%\n  step_interact(terms = ~ goals_abs:starts_with(\"rol_funcional\")) %>%\n  step_interact(terms = ~ assists_abs:starts_with(\"rol_funcional\")) %>%\n  step_interact(terms = ~ starts_with(\"age\"):starts_with(\"rol_funcional\")) %>%\n  step_interact(terms = ~ starts_with(\"age\"):minutes.played) %>%\n  step_interact(terms = ~ assists_abs:league_rating) %>%\n  step_zv(all_predictors())\n\n\n# PASO 3 y 4: ENTRENAMIENTO CON EL MEJOR LASSO ENCONTRADO\n#LASSO castiga las variables que no aportan nada al modelo, introduciendo el concepto de \"Penalty\" \n  \nmodelo_lasso_final <- linear_reg(penalty = 0.001389495, mixture = 1) %>% \n  set_engine(\"glmnet\") %>%\n  set_mode(\"regression\")\n\n#Aquí el modelo comienza a entrenar\nflujo_final <- workflow() %>% \n  add_recipe(receta_futbol) %>% \n  add_model(modelo_lasso_final)\n\nmodelo_entrenado <- fit(flujo_final, data = datos_entrenamiento)\n\n\n# PASO 5: EL EXAMEN FINAL\n\npredicciones_prueba <- predict(modelo_entrenado, new_data = datos_prueba) %>%\n  bind_cols(datos_prueba)\n\n# Resultados\nmetricas_finales <- metrics(predicciones_prueba, truth = log_precio, estimate = .pred)\n(metricas_finales)",
+      "# Ver las variables supervivientes\ncoeficientes_finales <- extract_fit_parsnip(modelo_entrenado) %>% \n  tidy() %>% \n  filter(estimate != 0) %>% \n  arrange(desc(abs(estimate)))\ncoeficientes_finales",
+      "modelo_lasso_tune <- linear_reg(penalty = tune(), mixture = 1) %>% \n  set_engine(\"glmnet\") %>%\n  set_mode(\"regression\")\n\nflujo_lasso_tune <- workflow() %>% \n  add_recipe(receta_futbol) %>% \n  add_model(modelo_lasso_tune)\n\nLASSO_grid <- grid_regular(penalty(range = c(0.0000001, 0.02), trans = NULL), \n                           levels = 51)\nset.seed(123)\nlasso_flujo_tuned <- tune_grid(\n  flujo_lasso_tune,\n  resamples = cv_folds,\n  metrics   = metric_set(rmse), # Nos enfocamos en minimizar el error\n  grid      = LASSO_grid\n)\nlasso_flujo_tuned %>% autoplot()",
+      "#| message: false\n#| warning: false\n\n\nlibrary(dplyr)\n\n# 1. PREDECIR EL PRECIO DE TODOS LOS JUGADORES\n# (Usamos el df_limpio entero, no solo el de prueba)\ntasacion_mercado <- predict(modelo_entrenado, new_data = df_limpio) %>%\n  bind_cols(df_limpio) %>%\n  \n  # 2. DESHACER EL LOGARITMO PARA VER MILLONES DE EUROS REALES\n  mutate(\n    precio_teorico = exp(.pred),             # Lo que dice el modelo que vale\n    precio_real = exp(log_precio),           # Lo que vale en la realidad (current_value)\n    \n    # 3. CALCULAR LA DIFERENCIA ABSOLUTA (¿Cuánto dinero ganas/pierdes?)\n    diferencia_euros = precio_teorico - precio_real,\n    \n    # Calcular el % de sobre/infravaloración\n    ratio_valoracion = precio_teorico / precio_real\n  ) %>%\n  # Nos quedamos con las columnas que nos interesan para el informe\n  select(name, team, league, age, rol_funcional, minutes.played, \n         precio_real, precio_teorico, diferencia_euros, ratio_valoracion)",
+      "#| message: false\n#| warning: false\n\n\n# LOS 10 JUGADORES MÁS INFRAVALORADOS \n\ninfravalorados <- tasacion_mercado %>%\n  arrange(desc(diferencia_euros)) %>% # Ordenar de mayor a menor diferencia\n  head(10)\n\n(infravalorados)",
+      "# LOS 10 JUGADORES MÁS SOBREVALORADOS\n\nsobrevalorados <- tasacion_mercado %>%\n  arrange(diferencia_euros) %>% \n  head(10)\n\n(sobrevalorados)",
+      "#| message: false\n#| warning: false\n\n\n# 1. CÁLCULO DE SIGNIFICANCIA ESTADÍSTICA (Z-SCORES) \n\n\nmercado_significativo_lasso <- tasacion_mercado %>%\n  mutate(\n    # Calculamos el residuo en escala logarítmica (Proporcional)\n    # Si Real < Teórico -> El resultado es NEGATIVO (Infravalorado)\n    residuo_log = log(precio_real) - log(precio_teorico),\n    \n    # Estandarizamos el error (Z-Score)\n    z_score = scale(residuo_log)[,1],\n    \n    # Clasificación con 95% de confianza (+/- 1.96 desviaciones)\n    significancia = case_when(\n      z_score < -1.96 ~ \"Significativamente INFRAVALORADO\",\n      z_score > 1.96  ~ \"Significativamente SOBREVALORADO\",\n      TRUE            ~ \"Normal\"\n    )\n  )\n\n# 3. TOP GANGAS SIGNIFICATIVAS (LASSO)\n# Aquí debería salir Denis Undav muy arriba debido a la agresividad del modelo\n\ninfravalorados_lasso <- mercado_significativo_lasso %>%\n  filter(significancia == \"Significativamente INFRAVALORADO\",\n         precio_real >= 2000000) %>% # Filtro de 1M para evitar ruido de juveniles\n  arrange(z_score) %>% # Los más negativos son las mayores gangas\n  select(name, team, age, precio_real, precio_teorico, ratio_valoracion, z_score) %>%\n  head(15)\n\n(infravalorados_lasso)",
+      "# 4. TOP SOBREVALORADOS SIGNIFICATIVOS (LASSO)\n\nsobrevalorados_lasso <- mercado_significativo_lasso %>%\n  filter(significancia == \"Significativamente SOBREVALORADO\",\n         precio_real >= 2000000) %>%\n  arrange(desc(z_score)) %>% # Los Z-scores más altos\n  select(name, team, age, precio_real, precio_teorico, ratio_valoracion, z_score) %>%\n  head(15)\n\n(sobrevalorados_lasso)"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-039.png"
+      }
+    ],
+    "tables": [
+      {
+        "columns": [
+          ".metric",
+          ".estimator",
+          ".estimate"
+        ],
+        "rows": [
+          [
+            "rmse",
+            "standard",
+            "1.0035603"
+          ],
+          [
+            "rsq",
+            "standard",
+            "0.6313078"
+          ],
+          [
+            "mae",
+            "standard",
+            "0.7881349"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "term",
+          "estimate",
+          "penalty"
+        ],
+        "rows": [
+          [
+            "age_poly_2",
+            "-35.4083724344",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Full_Backs_Wingers",
+            "-8.7302774985",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Full_Backs_Wingers",
+            "8.5545426076",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Striker",
+            "7.7530108595",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1",
+            "5.0305838684",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Game_Creator",
+            "3.7506518191",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Striker",
+            "3.3426235029",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Game_Creator",
+            "3.0654146396",
+            "0.001389495"
+          ],
+          [
+            "(Intercept)",
+            "1.8711660968",
+            "0.001389495"
+          ],
+          [
+            "league_rating",
+            "0.1458505888",
+            "0.001389495"
+          ],
+          [
+            "award",
+            "0.0885618076",
+            "0.001389495"
+          ],
+          [
+            "rol_funcional_Full_Backs_Wingers",
+            "-0.0861845886",
+            "0.001389495"
+          ],
+          [
+            "assists_abs",
+            "0.0507647684",
+            "0.001389495"
+          ],
+          [
+            "goals_abs",
+            "0.0164869238",
+            "0.001389495"
+          ],
+          [
+            "assists_abs_x_rol_funcional_Full_Backs_Wingers",
+            "-0.0146679290",
+            "0.001389495"
+          ],
+          [
+            "assists_abs_x_rol_funcional_Game_Creator",
+            "-0.0082681867",
+            "0.001389495"
+          ],
+          [
+            "assists_abs_x_rol_funcional_Striker",
+            "-0.0066197777",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_minutes.played",
+            "-0.0063761062",
+            "0.001389495"
+          ],
+          [
+            "goals_abs_x_rol_funcional_Striker",
+            "-0.0061754253",
+            "0.001389495"
+          ],
+          [
+            "goals_abs_x_rol_funcional_Full_Backs_Wingers",
+            "0.0054289890",
+            "0.001389495"
+          ],
+          [
+            "rol_funcional_Game_Creator",
+            "-0.0041137200",
+            "0.001389495"
+          ],
+          [
+            "games_injured",
+            "0.0027178590",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Game_Creator_x_minutes.played",
+            "-0.0025411056",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Striker_x_minutes.played",
+            "-0.0017602856",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Striker_x_minutes.played",
+            "-0.0012781001",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Full_Backs_Wingers_x_minutes.played",
+            "-0.0007019041",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_rol_funcional_Game_Creator_x_minutes.played",
+            "-0.0006717510",
+            "0.001389495"
+          ],
+          [
+            "age_poly_2_x_minutes.played",
+            "-0.0006603076",
+            "0.001389495"
+          ],
+          [
+            "age_poly_1_x_rol_funcional_Full_Backs_Wingers_x_minutes.played",
+            "0.0005840422",
+            "0.001389495"
+          ],
+          [
+            "minutes.played",
+            "0.0001702670",
+            "0.001389495"
+          ],
+          [
+            "goals_abs_x_rol_funcional_Game_Creator",
+            "0.0001154903",
+            "0.001389495"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "league",
+          "age",
+          "rol_funcional",
+          "minutes.played",
+          "precio_real",
+          "precio_teorico",
+          "diferencia_euros",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Lionel Messi",
+            "Paris Saint-Germain",
+            "Ligue 1",
+            "35",
+            "Full_Backs_Wingers",
+            "6509",
+            "45000000",
+            "11606691815",
+            "11561691815",
+            "257.926485"
+          ],
+          [
+            "Kylian Mbappé",
+            "Paris Saint-Germain",
+            "Ligue 1",
+            "24",
+            "Striker",
+            "7476",
+            "180000000",
+            "1830227514",
+            "1650227514",
+            "10.167931"
+          ],
+          [
+            "Robert Lewandowski",
+            "FC Barcelona",
+            "La Liga",
+            "34",
+            "Striker",
+            "7960",
+            "30000000",
+            "1212101424",
+            "1182101424",
+            "40.403381"
+          ],
+          [
+            "Mohamed Salah",
+            "Liverpool FC",
+            "Premier League",
+            "30",
+            "Full_Backs_Wingers",
+            "8315",
+            "70000000",
+            "548552519",
+            "478552519",
+            "7.836465"
+          ],
+          [
+            "Kevin De Bruyne",
+            "Manchester City",
+            "Premier League",
+            "31",
+            "Game_Creator",
+            "7022",
+            "80000000",
+            "496527915",
+            "416527915",
+            "6.206599"
+          ],
+          [
+            "Karim Benzema",
+            "Real Madrid",
+            "La Liga",
+            "35",
+            "Striker",
+            "7550",
+            "25000000",
+            "319315548",
+            "294315548",
+            "12.772622"
+          ],
+          [
+            "David Alaba",
+            "Real Madrid",
+            "La Liga",
+            "30",
+            "Defensive_Players",
+            "7070",
+            "40000000",
+            "252412243",
+            "212412243",
+            "6.310306"
+          ],
+          [
+            "Thomas Müller",
+            "Bayern Munich",
+            "Bundesliga",
+            "33",
+            "Striker",
+            "5896",
+            "18000000",
+            "217795437",
+            "199795437",
+            "12.099746"
+          ],
+          [
+            "Vinicius Junior",
+            "Real Madrid",
+            "La Liga",
+            "22",
+            "Full_Backs_Wingers",
+            "9033",
+            "150000000",
+            "327951354",
+            "177951354",
+            "2.186342"
+          ],
+          [
+            "Cristiano Ronaldo",
+            "Al-Nassr FC",
+            "Saudi Pro League",
+            "38",
+            "Striker",
+            "5973",
+            "15000000",
+            "150047823",
+            "135047823",
+            "10.003188"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "league",
+          "age",
+          "rol_funcional",
+          "minutes.played",
+          "precio_real",
+          "precio_teorico",
+          "diferencia_euros",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Jude Bellingham",
+            "Borussia Dortmund",
+            "Bundesliga",
+            "19",
+            "Game_Creator",
+            "7353",
+            "120000000",
+            "25447196",
+            "-94552804",
+            "0.21205997"
+          ],
+          [
+            "Pedri",
+            "FC Barcelona",
+            "La Liga",
+            "20",
+            "Game_Creator",
+            "4423",
+            "100000000",
+            "5466599",
+            "-94533401",
+            "0.05466599"
+          ],
+          [
+            "Gavi",
+            "FC Barcelona",
+            "La Liga",
+            "18",
+            "Game_Creator",
+            "6659",
+            "90000000",
+            "8583871",
+            "-81416129",
+            "0.09537634"
+          ],
+          [
+            "Victor Osimhen",
+            "SSC Napoli",
+            "Serie A",
+            "24",
+            "Striker",
+            "5335",
+            "100000000",
+            "22125162",
+            "-77874838",
+            "0.22125162"
+          ],
+          [
+            "Eduardo Camavinga",
+            "Real Madrid",
+            "La Liga",
+            "20",
+            "Game_Creator",
+            "5443",
+            "85000000",
+            "9460537",
+            "-75539463",
+            "0.11130043"
+          ],
+          [
+            "Jamal Musiala",
+            "Bayern Munich",
+            "Bundesliga",
+            "20",
+            "Game_Creator",
+            "5004",
+            "110000000",
+            "36732564",
+            "-73267436",
+            "0.33393240"
+          ],
+          [
+            "Florian Wirtz",
+            "Bayer 04 Leverkusen",
+            "Bundesliga",
+            "20",
+            "Game_Creator",
+            "4142",
+            "85000000",
+            "12417346",
+            "-72582654",
+            "0.14608642"
+          ],
+          [
+            "Aurélien Tchouaméni",
+            "Real Madrid",
+            "La Liga",
+            "23",
+            "Defensive_Players",
+            "7070",
+            "85000000",
+            "14899691",
+            "-70100309",
+            "0.17529048"
+          ],
+          [
+            "Enzo Fernández",
+            "Chelsea FC",
+            "Premier League",
+            "22",
+            "Defensive_Players",
+            "4363",
+            "85000000",
+            "15863730",
+            "-69136270",
+            "0.18663212"
+          ],
+          [
+            "Bukayo Saka",
+            "Arsenal FC",
+            "Premier League",
+            "21",
+            "Full_Backs_Wingers",
+            "7103",
+            "110000000",
+            "42985789",
+            "-67014211",
+            "0.39077990"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion",
+          "z_score"
+        ],
+        "rows": [
+          [
+            "Lionel Messi",
+            "Paris Saint-Germain",
+            "35",
+            "45000000",
+            "11606691815",
+            "257.926485",
+            "-5.460204"
+          ],
+          [
+            "Robert Lewandowski",
+            "FC Barcelona",
+            "34",
+            "30000000",
+            "1212101424",
+            "40.403381",
+            "-3.637330"
+          ],
+          [
+            "Karim Benzema",
+            "Real Madrid",
+            "35",
+            "25000000",
+            "319315548",
+            "12.772622",
+            "-2.504909"
+          ],
+          [
+            "Thomas Müller",
+            "Bayern Munich",
+            "33",
+            "18000000",
+            "217795437",
+            "12.099746",
+            "-2.451691"
+          ],
+          [
+            "Kylian Mbappé",
+            "Paris Saint-Germain",
+            "24",
+            "180000000",
+            "1830227514",
+            "10.167931",
+            "-2.280644"
+          ],
+          [
+            "Cristiano Ronaldo",
+            "Al-Nassr FC",
+            "38",
+            "15000000",
+            "150047823",
+            "10.003188",
+            "-2.264581"
+          ],
+          [
+            "Mohamed Salah",
+            "Liverpool FC",
+            "30",
+            "70000000",
+            "548552519",
+            "7.836465",
+            "-2.024533"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion",
+          "z_score"
+        ],
+        "rows": [
+          [
+            "Endrick",
+            "Sociedade Esportiva Palmeiras",
+            "16",
+            "20000000",
+            "160466.2",
+            "0.00802331",
+            "4.744953"
+          ],
+          [
+            "Vitor Roque",
+            "Club Athletico Paranaense",
+            "18",
+            "18000000",
+            "322583.3",
+            "0.01792129",
+            "3.954705"
+          ],
+          [
+            "Andrey Santos",
+            "Clube de Regatas Vasco da Gama",
+            "19",
+            "15000000",
+            "289649.3",
+            "0.01930995",
+            "3.881318"
+          ],
+          [
+            "Ângelo",
+            "Santos FC",
+            "18",
+            "13000000",
+            "257696.3",
+            "0.01982279",
+            "3.855543"
+          ],
+          [
+            "Marcos Leonardo",
+            "Santos FC",
+            "20",
+            "15000000",
+            "340431.2",
+            "0.02269541",
+            "3.722467"
+          ],
+          [
+            "Robert Renan",
+            "Zenit St. Petersburg",
+            "19",
+            "9000000",
+            "266969.9",
+            "0.02966333",
+            "3.459180"
+          ],
+          [
+            "Gianluca Prestianni",
+            "CA Vélez Sarsfield",
+            "17",
+            "5000000",
+            "149318.7",
+            "0.02986374",
+            "3.452558"
+          ],
+          [
+            "André",
+            "Fluminense Football Club",
+            "21",
+            "14000000",
+            "422842.8",
+            "0.03020305",
+            "3.441449"
+          ],
+          [
+            "Santiago Hezze",
+            "CA Huracán",
+            "21",
+            "8000000",
+            "267467.8",
+            "0.03343348",
+            "3.341527"
+          ],
+          [
+            "Matheus Nascimento",
+            "Botafogo de Futebol e Regatas",
+            "19",
+            "7000000",
+            "238838.3",
+            "0.03411975",
+            "3.321547"
+          ],
+          [
+            "Eliesse Ben Seghir",
+            "AS Monaco",
+            "18",
+            "18000000",
+            "623654.7",
+            "0.03464748",
+            "3.306454"
+          ],
+          [
+            "Valentín Gómez",
+            "CA Vélez Sarsfield",
+            "19",
+            "4500000",
+            "160675.3",
+            "0.03570562",
+            "3.276872"
+          ],
+          [
+            "Mateo Retegui",
+            "Club Atlético Tigre",
+            "24",
+            "16000000",
+            "575266.1",
+            "0.03595413",
+            "3.270052"
+          ],
+          [
+            "Facundo Farías",
+            "CA Colon",
+            "20",
+            "6000000",
+            "216750.9",
+            "0.03612515",
+            "3.265386"
+          ],
+          [
+            "Warren Zaïre-Emery",
+            "Paris Saint-Germain",
+            "17",
+            "18000000",
+            "662365.8",
+            "0.03679810",
+            "3.247236"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "conclusiones-del-modelo",
+    "title": "CONCLUSIONES DEL MODELO:",
+    "level": 1,
+    "path": [
+      "CONCLUSIONES DEL MODELO:"
+    ],
+    "paragraphs": [
+      "Lista de Infravalorados: El modelo identifica como grandes oportunidades de mercado a veteranos de élite mundial (Messi, Lewandowski, Benzema). Mientras que el mercado financiero penaliza su precio por la nula capacidad de reventa futura (depreciación por edad), el modelo valora su Rendimiento Inmediato (ROIC). Estadísticamente, estos jugadores producen cifras ofensivas muy superiores a su coste de mercado actual, siendo activos ideales para clubes que busquen rendimiento deportivo a corto plazo sin priorizar la plusvalía financiera.",
+      "Lista de Sobrevalorados: Inversamente, la lista de jugadores teóricamente “sobrevalorados” está repleta de talentos jóvenes (Bellingham, Pedri, Gavi). El mercado real asigna precios superiores a los 100M€ basándose en el Valor Esperado Futuro (Potencial). Sin embargo, el modelo, basado estrictamente en la realidad estadística actual, considera ineficiente pagar tales sumas por jugadores que, a día de hoy, aún no acumulan el volumen de goles y asistencias de las estrellas consagradas. Además, la mayoría de estos jugadores no son delanteros centro, solo oshimen lo es, mediante variables simples como goles o asistencias, es difícil medir jugadores como pedri, con un impacto sobre el juego asombroso, controlando el tiempo del partido, pero sin números de llegador.",
+      "Por otra parte, el modelo tiene un R^2 de 61%, el modelo se estanca en este 61% porque asume que el fútbol funciona con líneas rectas, ya que este es un método lineal. El RMSE de 1.018 refleja el error promedio de las predicciones. Al estar en escala logarítmica, su interpretación requiere deshacer la transformación (aprox. 2.77), la importancia de LASSO es la transparencia. Gracias al LASSO sabemos exactamente qué variables importan (coeficientes positivos) y cuáles restan valor, proporcionando las reglas del juego que rigen el mercado."
+    ],
+    "code": [],
+    "figures": [],
+    "tables": []
+  },
+  {
+    "id": "arboles-de-decisión",
+    "title": "Arboles de Decisión",
+    "level": 3,
+    "path": [
+      "CONCLUSIONES DEL MODELO:",
+      "Arboles de Decisión"
+    ],
+    "paragraphs": [
+      "Tras analizar las limitaciones de los modelos lineales, que asumen relaciones constantes y proporcionales, dimos un salto metodológico hacia algoritmos capaces de capturar la complejidad real del mercado: los métodos basados en árboles. Un árbol de decisión es, en esencia, un conjunto de reglas lógicas encadenadas, similar a un diagrama de flujo. El algoritmo divide repetidamente el conjunto de datos en subgrupos cada vez más homogéneos basándose en preguntas binarias (Sí/No) sobre las variables. Sin embargo, los árboles individuales tienen un gran defecto: son inestables y tienden al sobreajuste (overfitting). Memorizan demasiado bien los datos de entrenamiento, pero fallan al predecir datos nuevos. Un pequeño cambio en el dataset puede cambiar radicalmente la estructura del árbol.",
+      "Para solucionar la fragilidad de un solo árbol, utilizamos el algoritmo Random Forest. Este método se basa en la técnica de Ensemble Learning (aprendizaje en conjunto). El Random Forest crea cientos de árboles de decisión independientes (en nuestro modelo, usamos una configuración estándar de 100 árboles) y combina sus predicciones mediante promedios. Para asegurar que los árboles sean diferentes entre sí y no cometan los mismos errores, el algoritmo aplica dos niveles de aleatoriedad: Bagging (Bootstrap Aggregating): Cada árbol se entrena con una muestra aleatoria diferente de jugadores y selección aleatoria de variables.",
+      "EJEMPLO ARBOLES",
+      "Este código funciona como ejemplo, refleja como se hace 1 arbol de decisión, es útil para entender como funciona el random forest, el cual crea 100 árboles como este y obtiene promedios.",
+      "MODELO RANDOM FOREST: INFRAVALORADOS Y SOBREVALORADOS",
+      "INFRAVALORADOS Y SOBREVALORADOS. RATIO SOBRE PRECIO",
+      "INFRAVALORADOS Y SOBREVALORADOS SIGNIFICATIVOS"
+    ],
+    "code": [
+      "#| message: false\n#| warning: false\n\n\nlibrary(vip) \nlibrary(rpart.plot)\n\nsuppressWarnings(\n  suppressPackageStartupMessages({\n    library(vip)\n    library(rpart.plot)\n  })\n)\n\nreceta_rf <- recipe(log_precio ~ age + minutes.played + league_rating + \n                    games_injured + award + goals_abs + assists_abs + \n                    rol_funcional, \n                    data = datos_entrenamiento) %>%\n  step_dummy(all_nominal_predictors()) %>% # Convertimos texto a 1/0\n  step_zv(all_predictors())                # Quitamos variables que no varían (por seguridad)\n\nmodelo_rf <- rand_forest(mode = \"regression\", mtry = tune(), trees = 100) %>%\n  set_engine(\"ranger\", importance = \"impurity\")\n\n# 2. CREAMOS EL FLUJO (USANDO LA RECETA ANTERIOR)\n\nflujo_rf <- workflow() %>% \n  add_recipe(receta_rf) %>% \n  add_model(modelo_rf)\n\n# 3. ENTRENAMIENTO Y BÚSQUEDA DEL MEJOR BOSQUE\n# Creamos una malla para probar de 1 a 10 variables por corte\nmalla_rf <- grid_regular(mtry(range = c(1, 10)), levels = 10)\n\n#Entrenamos\nset.seed(123)\nrf_tuneado <- tune_grid(\n  flujo_rf,\n  resamples = cv_folds,\n  grid = malla_rf\n)\n\n# Vemos cuál es el mejor forest\n\nprint(autoplot(rf_tuneado) + \n      labs(title = \"Optimización Random Forest\", subtitle = \"RMSE vs mtry\") +\n      theme_minimal())",
+      "mejor_rf <- select_best(rf_tuneado, metric = \"rmse\")\n\n\n# 4. EL EXAMEN FINAL DEL RANDOM FOREST\n\nrf_final <- finalize_workflow(flujo_rf, mejor_rf)\nset.seed(123)\nmodelo_rf_entrenado <- fit(rf_final, data = datos_entrenamiento)\n\n# Predicciones\npredicciones_rf <- predict(modelo_rf_entrenado, new_data = datos_prueba) %>%\n  bind_cols(datos_prueba)\n\n# MÉTRICAS FINALES\nmetricas_rf <- metrics(predicciones_rf, truth = log_precio, estimate = .pred)\n(metricas_rf)",
+      "# 5. EL GRÁFICO DE IMPORTANCIA \n#Este gráfico nos indica cual ha sido la variable clave, si quitamos esta, el modelo se rompe. Se observa fácilmente que la variable MÁS importante es el coeficiente opta de las ligas.\n\ngrafico_importancia <- modelo_rf_entrenado %>%\n  extract_fit_parsnip() %>%\n  vip(num_features = 15, geom = \"col\", mapping = aes(fill = \"red\")) +\n  theme_minimal() +\n  labs(title = \"Importancia de las variables en el Modelo RF\")\n\n(grafico_importancia)",
+      "#| message: false\n#| warning: false\n\n\n#Este código funciona como ejemplo,refleja como se hace 1 arbol de decisión, es útil para entender como funciona el random forest, el cual crea 100 árboles como este y obtiene promedios.\n\n# 1. FORZAMOS LOS PARÁMETROS DEL ÁRBOL (Profundidad 4, Complejidad muy baja)\nmodelo_arbol_visual <- decision_tree(mode = \"regression\", \n                                     cost_complexity = 0.0001, # Permitir muchas ramas\n                                     tree_depth = 4) %>%       # Máximo 4 niveles\n  set_engine(\"rpart\")\n\n# 2. CREAMOS EL FLUJO Y ENTRENAMOS DIRECTAMENTE\nflujo_arbol_visual <- workflow() %>% \n  add_recipe(receta_futbol) %>% \n  add_model(modelo_arbol_visual)\n\n# Entrenamos \narbol_entrenado <- fit(flujo_arbol_visual, data = datos_entrenamiento)\n\n# 3. EXTRAEMOS EL CEREBRO DEL ÁRBOL\narb_visual <- arbol_entrenado %>% extract_fit_parsnip()\n\n# 4. DIBUJAMOS EL GRÁFICO \nrpart.plot(arb_visual$fit, \n           type = 4, \n           extra = 101, \n           roundint = FALSE,      \n           box.palette = \"Blues\", \n           shadow.col = \"gray\",\n           main = \"Factores Críticos en la Valoración de Jugadores\")",
+      "#| message: false\n#| warning: false\n\n#Modelo en base a Random Forest:\n\n# 1. PREDECIR EL PRECIO DE TODOS LOS JUGADORES\ntasacion_mercado_rf <- predict(modelo_rf_entrenado, new_data = df_limpio) %>%\n  bind_cols(df_limpio) %>%\n  \n# 2. DESHACER EL LOGARITMO PARA VER MILLONES DE EUROS REALES\n  mutate(\n    precio_teorico = exp(.pred),            \n    precio_real = exp(log_precio),           \n    \n# 3. CALCULAR LA DIFERENCIA ABSOLUTA (¿Cuánto dinero ganas/pierdes?)\n    diferencia_euros = precio_teorico - precio_real,\n    \n    # Calcular el % de sobre/infravaloración\n    ratio_valoracion = precio_teorico / precio_real\n  ) %>%\n  # Nos quedamos con las columnas que nos interesan para el informe\n  select(name, team, league, age, rol_funcional, minutes.played, \n         precio_real, precio_teorico, diferencia_euros, ratio_valoracion)\n\n\n\n# LOS 10 JUGADORES MÁS INFRAVALORADOS\n\ninfravaloradosRF <- tasacion_mercado_rf %>%\n  arrange(desc(diferencia_euros)) %>% \n  head(10)\n\n(infravaloradosRF)",
+      "# LOS 10 JUGADORES MÁS SOBREVALORADOS \n\n\nsobrevaloradosRF <- tasacion_mercado_rf %>%\n  arrange(diferencia_euros) %>%\n  head(10)\n\n(sobrevaloradosRF)",
+      "#| message: false\n#| warning: false\n\n\n# TOP 50 infravalorados RELATIVAS \n# Elegimos jugadores de al menos 1.000.000€.\n\ninfravalorados_relativos <- tasacion_mercado_rf %>%\n  filter(precio_real >= 4000000) %>%  \n  arrange(desc(ratio_valoracion)) %>% \n  select(name, team, age, rol_funcional, precio_real, precio_teorico, ratio_valoracion) %>%\n  head(50)\n\ninfravalorados_relativos",
+      "# TOP 50 SOBREVALORADOS RELATIVOS \n\nsobrevalorados_relativos <- tasacion_mercado_rf %>%\n  filter(precio_real >= 4000000) %>%  \n  arrange(ratio_valoracion) %>%       \n  select(name, team, age, rol_funcional, precio_real, precio_teorico, ratio_valoracion) %>%\n  head(50)\n\nsobrevalorados_relativos",
+      "#| message: false\n#| warning: false\n\n\n# PRUEBA DE SIGNIFICANCIA ESTADÍSTICA (Z-SCORES Y P-VALORES)\n\n\nmercado_significativo <- tasacion_mercado_rf %>%\n  mutate(\n    # 1. Calculamos el residuo usando las columnas que SÍ mantuvimos\n    residuo = log(precio_real) - log(precio_teorico),\n    \n    # 2. Estandarizamos el error (Z-Score)\n    z_score = scale(residuo)[,1],\n    \n    # 3. Clasificación Estadística con un 95% de confianza (Z > 1.96 o Z < -1.96)\n    significancia = case_when(\n      z_score < -1.96 ~ \"Significativamente INFRAVALORADO\",\n      z_score > 1.96  ~ \"Significativamente SOBREVALORADO\",\n      TRUE            ~ \"Precio Justo (Dentro de lo normal)\"\n    )\n  )\n\n# LOS INFRAVALORADOS ESTADÍSTICAMENTE PROBADOS (p < 0.05)\n\ninfravalorados_probados <- mercado_significativo %>%\n  filter(significancia == \"Significativamente INFRAVALORADO\", \n         precio_real >= 4000000) %>%\n  arrange(z_score) %>% \n  select(name, team, age, rol_funcional, precio_real, precio_teorico, ratio_valoracion, z_score) %>%\n  head(100)\n\ninfravalorados_probados",
+      "# TOP 10 SOBREVALORADOS ESTADÍSTICAMENTE SIGNIFICATIVOS (p < 0.05)\n\nsobrevalorados_probados <- mercado_significativo %>%\n  filter(significancia == \"Significativamente SOBREVALORADO\",\n         precio_real >= 4000000) %>%\n  arrange(desc(z_score)) %>% # Los Z-Scores más positivos son los más sobrevalorados\n  select(name, team, age, rol_funcional, precio_real, precio_teorico, ratio_valoracion, z_score) %>%\n  head(100)\n\nsobrevalorados_probados"
+    ],
+    "figures": [
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-040.png"
+      },
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-041.png"
+      },
+      {
+        "alt": "",
+        "caption": "",
+        "src": "research/figures/figure-042.png"
+      }
+    ],
+    "tables": [
+      {
+        "columns": [
+          ".metric",
+          ".estimator",
+          ".estimate"
+        ],
+        "rows": [
+          [
+            "rmse",
+            "standard",
+            "0.8513059"
+          ],
+          [
+            "rsq",
+            "standard",
+            "0.7349496"
+          ],
+          [
+            "mae",
+            "standard",
+            "0.6580739"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "league",
+          "age",
+          "rol_funcional",
+          "minutes.played",
+          "precio_real",
+          "precio_teorico",
+          "diferencia_euros",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Thijs Dallinga",
+            "FC Toulouse",
+            "Ligue 1",
+            "22",
+            "Striker",
+            "6773",
+            "7000000",
+            "31176699",
+            "24176699",
+            "4.453814"
+          ],
+          [
+            "Adam Hlozek",
+            "Bayer 04 Leverkusen",
+            "Bundesliga",
+            "20",
+            "Striker",
+            "6039",
+            "15000000",
+            "36337880",
+            "21337880",
+            "2.422525"
+          ],
+          [
+            "Ryan Yates",
+            "Nottingham Forest",
+            "Premier League",
+            "25",
+            "Game_Creator",
+            "6578",
+            "8000000",
+            "25743991",
+            "17743991",
+            "3.217999"
+          ],
+          [
+            "Branco van den Boomen",
+            "FC Toulouse",
+            "Ligue 1",
+            "27",
+            "Game_Creator",
+            "6720",
+            "9000000",
+            "26228035",
+            "17228035",
+            "2.914226"
+          ],
+          [
+            "Ryan Christie",
+            "AFC Bournemouth",
+            "Premier League",
+            "28",
+            "Game_Creator",
+            "5892",
+            "9000000",
+            "25672860",
+            "16672860",
+            "2.852540"
+          ],
+          [
+            "Aleksandar Mitrović",
+            "Fulham FC",
+            "Premier League",
+            "28",
+            "Striker",
+            "6188",
+            "28000000",
+            "44214420",
+            "16214420",
+            "1.579086"
+          ],
+          [
+            "Joshua Zirkzee",
+            "Bologna FC 1909",
+            "Serie A",
+            "22",
+            "Striker",
+            "3979",
+            "9000000",
+            "21854804",
+            "12854804",
+            "2.428312"
+          ],
+          [
+            "Scott McKenna",
+            "Nottingham Forest",
+            "Premier League",
+            "26",
+            "Defensive_Players",
+            "6431",
+            "10000000",
+            "21474740",
+            "11474740",
+            "2.147474"
+          ],
+          [
+            "Nikola Moro",
+            "Bologna FC 1909",
+            "Serie A",
+            "25",
+            "Defensive_Players",
+            "4540",
+            "7000000",
+            "17653163",
+            "10653163",
+            "2.521880"
+          ],
+          [
+            "Chancel Mbemba",
+            "Olympique Marseille",
+            "Ligue 1",
+            "28",
+            "Defensive_Players",
+            "7789",
+            "20000000",
+            "30375535",
+            "10375535",
+            "1.518777"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "league",
+          "age",
+          "rol_funcional",
+          "minutes.played",
+          "precio_real",
+          "precio_teorico",
+          "diferencia_euros",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Erling Haaland",
+            "Manchester City",
+            "Premier League",
+            "22",
+            "Striker",
+            "6519",
+            "170000000",
+            "73577150",
+            "-96422850",
+            "0.4328068"
+          ],
+          [
+            "Pedri",
+            "FC Barcelona",
+            "La Liga",
+            "20",
+            "Game_Creator",
+            "4423",
+            "100000000",
+            "7569150",
+            "-92430850",
+            "0.0756915"
+          ],
+          [
+            "Bukayo Saka",
+            "Arsenal FC",
+            "Premier League",
+            "21",
+            "Full_Backs_Wingers",
+            "7103",
+            "110000000",
+            "38798258",
+            "-71201742",
+            "0.3527114"
+          ],
+          [
+            "Vinicius Junior",
+            "Real Madrid",
+            "La Liga",
+            "22",
+            "Full_Backs_Wingers",
+            "9033",
+            "150000000",
+            "83540535",
+            "-66459465",
+            "0.5569369"
+          ],
+          [
+            "Kylian Mbappé",
+            "Paris Saint-Germain",
+            "Ligue 1",
+            "24",
+            "Striker",
+            "7476",
+            "180000000",
+            "118173462",
+            "-61826538",
+            "0.6565192"
+          ],
+          [
+            "Florian Wirtz",
+            "Bayer 04 Leverkusen",
+            "Bundesliga",
+            "20",
+            "Game_Creator",
+            "4142",
+            "85000000",
+            "25975385",
+            "-59024615",
+            "0.3055928"
+          ],
+          [
+            "Jude Bellingham",
+            "Borussia Dortmund",
+            "Bundesliga",
+            "19",
+            "Game_Creator",
+            "7353",
+            "120000000",
+            "64488435",
+            "-55511565",
+            "0.5374036"
+          ],
+          [
+            "Khvicha Kvaratskhelia",
+            "SSC Napoli",
+            "Serie A",
+            "22",
+            "Full_Backs_Wingers",
+            "4936",
+            "85000000",
+            "30205124",
+            "-54794876",
+            "0.3553544"
+          ],
+          [
+            "Declan Rice",
+            "West Ham United",
+            "Premier League",
+            "24",
+            "Defensive_Players",
+            "8570",
+            "80000000",
+            "26547950",
+            "-53452050",
+            "0.3318494"
+          ],
+          [
+            "Neymar",
+            "Paris Saint-Germain",
+            "Ligue 1",
+            "31",
+            "Full_Backs_Wingers",
+            "4690",
+            "70000000",
+            "16727463",
+            "-53272537",
+            "0.2389638"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "rol_funcional",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Thijs Dallinga",
+            "FC Toulouse",
+            "22",
+            "Striker",
+            "7000000",
+            "31176699",
+            "4.453814"
+          ],
+          [
+            "Ryan Yates",
+            "Nottingham Forest",
+            "25",
+            "Game_Creator",
+            "8000000",
+            "25743991",
+            "3.217999"
+          ],
+          [
+            "Branco van den Boomen",
+            "FC Toulouse",
+            "27",
+            "Game_Creator",
+            "9000000",
+            "26228035",
+            "2.914226"
+          ],
+          [
+            "Ryan Christie",
+            "AFC Bournemouth",
+            "28",
+            "Game_Creator",
+            "9000000",
+            "25672860",
+            "2.852540"
+          ],
+          [
+            "Muhammed Cham",
+            "Clermont Foot 63",
+            "22",
+            "Game_Creator",
+            "5000000",
+            "13172741",
+            "2.634548"
+          ],
+          [
+            "Nikola Moro",
+            "Bologna FC 1909",
+            "25",
+            "Defensive_Players",
+            "7000000",
+            "17653163",
+            "2.521880"
+          ],
+          [
+            "Waldemar Anton",
+            "VfB Stuttgart",
+            "26",
+            "Defensive_Players",
+            "4500000",
+            "11200245",
+            "2.488943"
+          ],
+          [
+            "Joshua Zirkzee",
+            "Bologna FC 1909",
+            "22",
+            "Striker",
+            "9000000",
+            "21854804",
+            "2.428312"
+          ],
+          [
+            "Adam Hlozek",
+            "Bayer 04 Leverkusen",
+            "20",
+            "Striker",
+            "15000000",
+            "36337880",
+            "2.422525"
+          ],
+          [
+            "Marvin Ducksch",
+            "SV Werder Bremen",
+            "29",
+            "Striker",
+            "6500000",
+            "15367405",
+            "2.364216"
+          ],
+          [
+            "Scott McKenna",
+            "Nottingham Forest",
+            "26",
+            "Defensive_Players",
+            "10000000",
+            "21474740",
+            "2.147474"
+          ],
+          [
+            "Mislav Orsic",
+            "Southampton FC",
+            "30",
+            "Full_Backs_Wingers",
+            "7000000",
+            "14493585",
+            "2.070512"
+          ],
+          [
+            "Deniz Undav",
+            "Brighton &amp; Hove Albion",
+            "26",
+            "Striker",
+            "6000000",
+            "12113299",
+            "2.018883"
+          ],
+          [
+            "Montassar Talbi",
+            "FC Lorient",
+            "25",
+            "Defensive_Players",
+            "5000000",
+            "9745865",
+            "1.949173"
+          ],
+          [
+            "Philipp Max",
+            "Eintracht Frankfurt",
+            "29",
+            "Full_Backs_Wingers",
+            "6000000",
+            "11318924",
+            "1.886487"
+          ],
+          [
+            "Romano Schmid",
+            "SV Werder Bremen",
+            "23",
+            "Game_Creator",
+            "4500000",
+            "8361445",
+            "1.858099"
+          ],
+          [
+            "Martin Valjent",
+            "RCD Mallorca",
+            "27",
+            "Defensive_Players",
+            "4500000",
+            "8347006",
+            "1.854890"
+          ],
+          [
+            "Rasmus Nicolaisen",
+            "FC Toulouse",
+            "26",
+            "Defensive_Players",
+            "5000000",
+            "9005955",
+            "1.801191"
+          ],
+          [
+            "Joe Worrall",
+            "Nottingham Forest",
+            "26",
+            "Defensive_Players",
+            "8000000",
+            "14125545",
+            "1.765693"
+          ],
+          [
+            "Manuel Lanzini",
+            "West Ham United",
+            "30",
+            "Game_Creator",
+            "8000000",
+            "13762752",
+            "1.720344"
+          ],
+          [
+            "Serge Aurier",
+            "Nottingham Forest",
+            "30",
+            "Full_Backs_Wingers",
+            "6000000",
+            "10213163",
+            "1.702194"
+          ],
+          [
+            "Alex Sandro",
+            "Juventus FC",
+            "32",
+            "Full_Backs_Wingers",
+            "4500000",
+            "7568166",
+            "1.681815"
+          ],
+          [
+            "Jaidon Anthony",
+            "AFC Bournemouth",
+            "23",
+            "Full_Backs_Wingers",
+            "5000000",
+            "8213568",
+            "1.642714"
+          ],
+          [
+            "Mostafa Mohamed",
+            "FC Nantes",
+            "25",
+            "Striker",
+            "6000000",
+            "9802660",
+            "1.633777"
+          ],
+          [
+            "Dante Vanzeir",
+            "New York Red Bulls",
+            "25",
+            "Striker",
+            "5000000",
+            "8132840",
+            "1.626568"
+          ],
+          [
+            "Maximilian Wöber",
+            "Leeds United",
+            "25",
+            "Defensive_Players",
+            "12000000",
+            "19411169",
+            "1.617597"
+          ],
+          [
+            "Dion Beljo",
+            "FC Augsburg",
+            "21",
+            "Striker",
+            "6500000",
+            "10437248",
+            "1.605730"
+          ],
+          [
+            "Mario Götze",
+            "Eintracht Frankfurt",
+            "30",
+            "Game_Creator",
+            "13000000",
+            "20857859",
+            "1.604451"
+          ],
+          [
+            "Rani Khedira",
+            "1.FC Union Berlin",
+            "29",
+            "Defensive_Players",
+            "8000000",
+            "12833257",
+            "1.604157"
+          ],
+          [
+            "Danilho Doekhi",
+            "1.FC Union Berlin",
+            "24",
+            "Defensive_Players",
+            "12000000",
+            "19114246",
+            "1.592854"
+          ],
+          [
+            "Aleksandar Mitrović",
+            "Fulham FC",
+            "28",
+            "Striker",
+            "28000000",
+            "44214420",
+            "1.579086"
+          ],
+          [
+            "Marco Friedl",
+            "SV Werder Bremen",
+            "25",
+            "Defensive_Players",
+            "6500000",
+            "10258623",
+            "1.578250"
+          ],
+          [
+            "Santiago Bueno",
+            "Girona FC",
+            "24",
+            "Defensive_Players",
+            "8000000",
+            "12588151",
+            "1.573519"
+          ],
+          [
+            "Antonee Robinson",
+            "Fulham FC",
+            "25",
+            "Full_Backs_Wingers",
+            "12000000",
+            "18881449",
+            "1.573454"
+          ],
+          [
+            "Sergio Camello",
+            "Rayo Vallecano",
+            "22",
+            "Striker",
+            "10000000",
+            "15667987",
+            "1.566799"
+          ],
+          [
+            "Marc Oliver Kempf",
+            "Hertha BSC",
+            "28",
+            "Defensive_Players",
+            "4500000",
+            "7033563",
+            "1.563014"
+          ],
+          [
+            "Gonzalo Plata",
+            "Real Valladolid CF",
+            "22",
+            "Full_Backs_Wingers",
+            "5000000",
+            "7810004",
+            "1.562001"
+          ],
+          [
+            "Cyriel Dessers",
+            "US Cremonese",
+            "28",
+            "Striker",
+            "6000000",
+            "9294686",
+            "1.549114"
+          ],
+          [
+            "Sepp van den Berg",
+            "FC Schalke 04",
+            "21",
+            "Defensive_Players",
+            "5000000",
+            "7737538",
+            "1.547508"
+          ],
+          [
+            "Jeremy Sarmiento",
+            "Brighton &amp; Hove Albion",
+            "20",
+            "Game_Creator",
+            "5000000",
+            "7720249",
+            "1.544050"
+          ],
+          [
+            "Chris Mepham",
+            "AFC Bournemouth",
+            "25",
+            "Defensive_Players",
+            "6000000",
+            "9211877",
+            "1.535313"
+          ],
+          [
+            "James Garner",
+            "Everton FC",
+            "22",
+            "Defensive_Players",
+            "14000000",
+            "21297704",
+            "1.521265"
+          ],
+          [
+            "Chancel Mbemba",
+            "Olympique Marseille",
+            "28",
+            "Defensive_Players",
+            "20000000",
+            "30375535",
+            "1.518777"
+          ],
+          [
+            "Pascal Groß",
+            "Brighton &amp; Hove Albion",
+            "31",
+            "Game_Creator",
+            "8000000",
+            "12035293",
+            "1.504412"
+          ],
+          [
+            "Sandi Lovric",
+            "Udinese Calcio",
+            "25",
+            "Game_Creator",
+            "7000000",
+            "10519329",
+            "1.502761"
+          ],
+          [
+            "Dominic Solanke",
+            "AFC Bournemouth",
+            "25",
+            "Striker",
+            "18000000",
+            "26846736",
+            "1.491485"
+          ],
+          [
+            "Mitchell Weiser",
+            "SV Werder Bremen",
+            "29",
+            "Full_Backs_Wingers",
+            "5500000",
+            "8092332",
+            "1.471333"
+          ],
+          [
+            "Denis Huseinbasic",
+            "1.FC Köln",
+            "21",
+            "Game_Creator",
+            "5000000",
+            "7317091",
+            "1.463418"
+          ],
+          [
+            "Dany Mota",
+            "AC Monza",
+            "25",
+            "Striker",
+            "5500000",
+            "8034729",
+            "1.460860"
+          ],
+          [
+            "Moses Simon",
+            "FC Nantes",
+            "27",
+            "Full_Backs_Wingers",
+            "9000000",
+            "13061649",
+            "1.451294"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "rol_funcional",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion"
+        ],
+        "rows": [
+          [
+            "Eliesse Ben Seghir",
+            "AS Monaco",
+            "18",
+            "Game_Creator",
+            "18000000",
+            "649360.3",
+            "0.03607557"
+          ],
+          [
+            "Matheus Martins",
+            "Watford FC",
+            "19",
+            "Full_Backs_Wingers",
+            "7000000",
+            "307797.1",
+            "0.04397102"
+          ],
+          [
+            "Giuliano Galoppo",
+            "São Paulo Futebol Clube",
+            "23",
+            "Game_Creator",
+            "8000000",
+            "546428.8",
+            "0.06830360"
+          ],
+          [
+            "Pedri",
+            "FC Barcelona",
+            "20",
+            "Game_Creator",
+            "100000000",
+            "7569149.7",
+            "0.07569150"
+          ],
+          [
+            "João Pedro",
+            "Watford FC",
+            "21",
+            "Striker",
+            "32000000",
+            "2550695.6",
+            "0.07970924"
+          ],
+          [
+            "Anel Ahmedhodzic",
+            "Sheffield United",
+            "24",
+            "Defensive_Players",
+            "20000000",
+            "1632135.5",
+            "0.08160678"
+          ],
+          [
+            "Jordan Beyer",
+            "Burnley FC",
+            "23",
+            "Defensive_Players",
+            "16000000",
+            "1473963.8",
+            "0.09212274"
+          ],
+          [
+            "Igor Gomes",
+            "Clube Atlético Mineiro",
+            "24",
+            "Game_Creator",
+            "5500000",
+            "509435.2",
+            "0.09262459"
+          ],
+          [
+            "Dele Alli",
+            "Besiktas JK",
+            "27",
+            "Game_Creator",
+            "8000000",
+            "776873.0",
+            "0.09710913"
+          ],
+          [
+            "Romain Saïss",
+            "Besiktas JK",
+            "33",
+            "Defensive_Players",
+            "5000000",
+            "504943.7",
+            "0.10098874"
+          ],
+          [
+            "Hannibal",
+            "Birmingham City",
+            "20",
+            "Game_Creator",
+            "8000000",
+            "864695.8",
+            "0.10808697"
+          ],
+          [
+            "Iván Fresneda",
+            "Real Valladolid CF",
+            "18",
+            "Full_Backs_Wingers",
+            "15000000",
+            "1649708.8",
+            "0.10998058"
+          ],
+          [
+            "Giorgio Scalvini",
+            "Atalanta BC",
+            "19",
+            "Defensive_Players",
+            "30000000",
+            "3481356.8",
+            "0.11604523"
+          ],
+          [
+            "Pablo Barrios",
+            "Atlético de Madrid",
+            "19",
+            "Game_Creator",
+            "5000000",
+            "590800.3",
+            "0.11816006"
+          ],
+          [
+            "Éderson",
+            "Atalanta BC",
+            "23",
+            "Game_Creator",
+            "20000000",
+            "2401332.5",
+            "0.12006662"
+          ],
+          [
+            "Cameron Archer",
+            "Middlesbrough FC",
+            "21",
+            "Striker",
+            "12000000",
+            "1442305.6",
+            "0.12019214"
+          ],
+          [
+            "Ricardo Pepi",
+            "FC Groningen",
+            "20",
+            "Striker",
+            "9000000",
+            "1088856.9",
+            "0.12098410"
+          ],
+          [
+            "Alejandro Balde",
+            "FC Barcelona",
+            "19",
+            "Full_Backs_Wingers",
+            "50000000",
+            "6215849.1",
+            "0.12431698"
+          ],
+          [
+            "Malo Gusto",
+            "Olympique Lyon",
+            "20",
+            "Full_Backs_Wingers",
+            "25000000",
+            "3191351.3",
+            "0.12765405"
+          ],
+          [
+            "Auston Trusty",
+            "Birmingham City",
+            "24",
+            "Defensive_Players",
+            "10000000",
+            "1327105.0",
+            "0.13271050"
+          ],
+          [
+            "Luca Netz",
+            "Borussia Mönchengladbach",
+            "20",
+            "Full_Backs_Wingers",
+            "6500000",
+            "866540.8",
+            "0.13331397"
+          ],
+          [
+            "Strahinja Pavlovic",
+            "Red Bull Salzburg",
+            "22",
+            "Defensive_Players",
+            "25000000",
+            "3470297.8",
+            "0.13881191"
+          ],
+          [
+            "Jesús Ferreira",
+            "FC Dallas",
+            "22",
+            "Striker",
+            "8000000",
+            "1148564.5",
+            "0.14357057"
+          ],
+          [
+            "Jeffinho",
+            "Olympique Lyon",
+            "23",
+            "Full_Backs_Wingers",
+            "6000000",
+            "862588.3",
+            "0.14376472"
+          ],
+          [
+            "Joe Scally",
+            "Borussia Mönchengladbach",
+            "20",
+            "Full_Backs_Wingers",
+            "12000000",
+            "1736401.3",
+            "0.14470011"
+          ],
+          [
+            "Nathan Redmond",
+            "Besiktas JK",
+            "29",
+            "Full_Backs_Wingers",
+            "10000000",
+            "1519756.7",
+            "0.15197567"
+          ],
+          [
+            "Andreas Schjelderup",
+            "SL Benfica",
+            "18",
+            "Full_Backs_Wingers",
+            "9000000",
+            "1369866.2",
+            "0.15220736"
+          ],
+          [
+            "Lionel Messi",
+            "Paris Saint-Germain",
+            "35",
+            "Full_Backs_Wingers",
+            "45000000",
+            "7098864.2",
+            "0.15775254"
+          ],
+          [
+            "André Amaro",
+            "Vitória Guimarães SC",
+            "20",
+            "Defensive_Players",
+            "5000000",
+            "801419.1",
+            "0.16028383"
+          ],
+          [
+            "Gilberto",
+            "SL Benfica",
+            "30",
+            "Full_Backs_Wingers",
+            "6000000",
+            "965525.0",
+            "0.16092083"
+          ],
+          [
+            "Stipe Biuk",
+            "Los Angeles FC",
+            "20",
+            "Full_Backs_Wingers",
+            "6500000",
+            "1056998.8",
+            "0.16261520"
+          ],
+          [
+            "Francisco Conceição",
+            "Ajax Amsterdam",
+            "20",
+            "Full_Backs_Wingers",
+            "8000000",
+            "1323795.0",
+            "0.16547438"
+          ],
+          [
+            "Daryl Dike",
+            "West Bromwich Albion",
+            "22",
+            "Striker",
+            "7000000",
+            "1178373.1",
+            "0.16833902"
+          ],
+          [
+            "Marcos Leonardo",
+            "Santos FC",
+            "20",
+            "Striker",
+            "15000000",
+            "2657054.5",
+            "0.17713697"
+          ],
+          [
+            "Mattia Viti",
+            "OGC Nice",
+            "21",
+            "Defensive_Players",
+            "10000000",
+            "1777793.7",
+            "0.17777937"
+          ],
+          [
+            "Adonis Frías",
+            "Club León FC",
+            "25",
+            "Defensive_Players",
+            "4500000",
+            "813961.5",
+            "0.18088032"
+          ],
+          [
+            "Wesley Fofana",
+            "Chelsea FC",
+            "22",
+            "Defensive_Players",
+            "65000000",
+            "12100297.0",
+            "0.18615841"
+          ],
+          [
+            "Santiago Hezze",
+            "CA Huracán",
+            "21",
+            "Defensive_Players",
+            "8000000",
+            "1513286.2",
+            "0.18916078"
+          ],
+          [
+            "Nicolas Pépé",
+            "OGC Nice",
+            "28",
+            "Full_Backs_Wingers",
+            "22000000",
+            "4272341.8",
+            "0.19419736"
+          ],
+          [
+            "Jhon Córdoba",
+            "FK Krasnodar",
+            "30",
+            "Striker",
+            "11000000",
+            "2163832.2",
+            "0.19671202"
+          ],
+          [
+            "Sander Berge",
+            "Sheffield United",
+            "25",
+            "Game_Creator",
+            "20000000",
+            "3986437.3",
+            "0.19932187"
+          ],
+          [
+            "Lucas Gourna-Douath",
+            "Red Bull Salzburg",
+            "19",
+            "Defensive_Players",
+            "12000000",
+            "2404936.7",
+            "0.20041139"
+          ],
+          [
+            "Micky van de Ven",
+            "VfL Wolfsburg",
+            "22",
+            "Defensive_Players",
+            "18000000",
+            "3618293.3",
+            "0.20101630"
+          ],
+          [
+            "Charlie Cresswell",
+            "Millwall FC",
+            "20",
+            "Defensive_Players",
+            "5000000",
+            "1017982.6",
+            "0.20359653"
+          ],
+          [
+            "Wilson Isidor",
+            "Lokomotiv Moscow",
+            "22",
+            "Striker",
+            "6000000",
+            "1228831.5",
+            "0.20480524"
+          ],
+          [
+            "Imrân Louza",
+            "Watford FC",
+            "24",
+            "Game_Creator",
+            "9000000",
+            "1844194.4",
+            "0.20491049"
+          ],
+          [
+            "Simon Kjaer",
+            "AC Milan",
+            "34",
+            "Defensive_Players",
+            "5000000",
+            "1046531.8",
+            "0.20930636"
+          ],
+          [
+            "Jesús Medina",
+            "CSKA Moscow",
+            "26",
+            "Full_Backs_Wingers",
+            "7000000",
+            "1523011.8",
+            "0.21757312"
+          ],
+          [
+            "Owen Wijndal",
+            "Ajax Amsterdam",
+            "23",
+            "Full_Backs_Wingers",
+            "10000000",
+            "2184783.0",
+            "0.21847830"
+          ],
+          [
+            "Josh Sargent",
+            "Norwich City",
+            "23",
+            "Striker",
+            "12000000",
+            "2624995.4",
+            "0.21874961"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "rol_funcional",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion",
+          "z_score"
+        ],
+        "rows": [
+          [
+            "Thijs Dallinga",
+            "FC Toulouse",
+            "22",
+            "Striker",
+            "7000000",
+            "31176699",
+            "4.453814",
+            "-2.865889"
+          ],
+          [
+            "Ryan Yates",
+            "Nottingham Forest",
+            "25",
+            "Game_Creator",
+            "8000000",
+            "25743991",
+            "3.217999",
+            "-2.243969"
+          ],
+          [
+            "Branco van den Boomen",
+            "FC Toulouse",
+            "27",
+            "Game_Creator",
+            "9000000",
+            "26228035",
+            "2.914226",
+            "-2.054226"
+          ],
+          [
+            "Ryan Christie",
+            "AFC Bournemouth",
+            "28",
+            "Game_Creator",
+            "9000000",
+            "25672860",
+            "2.852540",
+            "-2.013286"
+          ]
+        ]
+      },
+      {
+        "columns": [
+          "name",
+          "team",
+          "age",
+          "rol_funcional",
+          "precio_real",
+          "precio_teorico",
+          "ratio_valoracion",
+          "z_score"
+        ],
+        "rows": [
+          [
+            "Eliesse Ben Seghir",
+            "AS Monaco",
+            "18",
+            "Game_Creator",
+            "18000000",
+            "649360.3",
+            "0.03607557",
+            "6.349782"
+          ],
+          [
+            "Matheus Martins",
+            "Watford FC",
+            "19",
+            "Full_Backs_Wingers",
+            "7000000",
+            "307797.1",
+            "0.04397102",
+            "5.971053"
+          ],
+          [
+            "Giuliano Galoppo",
+            "São Paulo Futebol Clube",
+            "23",
+            "Game_Creator",
+            "8000000",
+            "546428.8",
+            "0.06830360",
+            "5.128246"
+          ],
+          [
+            "Pedri",
+            "FC Barcelona",
+            "20",
+            "Game_Creator",
+            "100000000",
+            "7569149.7",
+            "0.07569150",
+            "4.931714"
+          ],
+          [
+            "João Pedro",
+            "Watford FC",
+            "21",
+            "Striker",
+            "32000000",
+            "2550695.6",
+            "0.07970924",
+            "4.832744"
+          ],
+          [
+            "Anel Ahmedhodzic",
+            "Sheffield United",
+            "24",
+            "Defensive_Players",
+            "20000000",
+            "1632135.5",
+            "0.08160678",
+            "4.787723"
+          ],
+          [
+            "Jordan Beyer",
+            "Burnley FC",
+            "23",
+            "Defensive_Players",
+            "16000000",
+            "1473963.8",
+            "0.09212274",
+            "4.555777"
+          ],
+          [
+            "Igor Gomes",
+            "Clube Atlético Mineiro",
+            "24",
+            "Game_Creator",
+            "5500000",
+            "509435.2",
+            "0.09262459",
+            "4.545381"
+          ],
+          [
+            "Dele Alli",
+            "Besiktas JK",
+            "27",
+            "Game_Creator",
+            "8000000",
+            "776873.0",
+            "0.09710913",
+            "4.454905"
+          ],
+          [
+            "Romain Saïss",
+            "Besiktas JK",
+            "33",
+            "Defensive_Players",
+            "5000000",
+            "504943.7",
+            "0.10098874",
+            "4.379943"
+          ],
+          [
+            "Hannibal",
+            "Birmingham City",
+            "20",
+            "Game_Creator",
+            "8000000",
+            "864695.8",
+            "0.10808697",
+            "4.249958"
+          ],
+          [
+            "Iván Fresneda",
+            "Real Valladolid CF",
+            "18",
+            "Full_Backs_Wingers",
+            "15000000",
+            "1649708.8",
+            "0.10998058",
+            "4.216723"
+          ],
+          [
+            "Giorgio Scalvini",
+            "Atalanta BC",
+            "19",
+            "Defensive_Players",
+            "30000000",
+            "3481356.8",
+            "0.11604523",
+            "4.114009"
+          ],
+          [
+            "Pablo Barrios",
+            "Atlético de Madrid",
+            "19",
+            "Game_Creator",
+            "5000000",
+            "590800.3",
+            "0.11816006",
+            "4.079449"
+          ],
+          [
+            "Éderson",
+            "Atalanta BC",
+            "23",
+            "Game_Creator",
+            "20000000",
+            "2401332.5",
+            "0.12006662",
+            "4.048819"
+          ],
+          [
+            "Cameron Archer",
+            "Middlesbrough FC",
+            "21",
+            "Striker",
+            "12000000",
+            "1442305.6",
+            "0.12019214",
+            "4.046820"
+          ],
+          [
+            "Ricardo Pepi",
+            "FC Groningen",
+            "20",
+            "Striker",
+            "9000000",
+            "1088856.9",
+            "0.12098410",
+            "4.034252"
+          ],
+          [
+            "Alejandro Balde",
+            "FC Barcelona",
+            "19",
+            "Full_Backs_Wingers",
+            "50000000",
+            "6215849.1",
+            "0.12431698",
+            "3.982249"
+          ],
+          [
+            "Malo Gusto",
+            "Olympique Lyon",
+            "20",
+            "Full_Backs_Wingers",
+            "25000000",
+            "3191351.3",
+            "0.12765405",
+            "3.931559"
+          ],
+          [
+            "Auston Trusty",
+            "Birmingham City",
+            "24",
+            "Defensive_Players",
+            "10000000",
+            "1327105.0",
+            "0.13271050",
+            "3.857224"
+          ],
+          [
+            "Luca Netz",
+            "Borussia Mönchengladbach",
+            "20",
+            "Full_Backs_Wingers",
+            "6500000",
+            "866540.8",
+            "0.13331397",
+            "3.848542"
+          ],
+          [
+            "Strahinja Pavlovic",
+            "Red Bull Salzburg",
+            "22",
+            "Defensive_Players",
+            "25000000",
+            "3470297.8",
+            "0.13881191",
+            "3.771208"
+          ],
+          [
+            "Jesús Ferreira",
+            "FC Dallas",
+            "22",
+            "Striker",
+            "8000000",
+            "1148564.5",
+            "0.14357057",
+            "3.706707"
+          ],
+          [
+            "Jeffinho",
+            "Olympique Lyon",
+            "23",
+            "Full_Backs_Wingers",
+            "6000000",
+            "862588.3",
+            "0.14376472",
+            "3.704121"
+          ],
+          [
+            "Joe Scally",
+            "Borussia Mönchengladbach",
+            "20",
+            "Full_Backs_Wingers",
+            "12000000",
+            "1736401.3",
+            "0.14470011",
+            "3.691711"
+          ],
+          [
+            "Nathan Redmond",
+            "Besiktas JK",
+            "29",
+            "Full_Backs_Wingers",
+            "10000000",
+            "1519756.7",
+            "0.15197567",
+            "3.597836"
+          ],
+          [
+            "Andreas Schjelderup",
+            "SL Benfica",
+            "18",
+            "Full_Backs_Wingers",
+            "9000000",
+            "1369866.2",
+            "0.15220736",
+            "3.594920"
+          ],
+          [
+            "Lionel Messi",
+            "Paris Saint-Germain",
+            "35",
+            "Full_Backs_Wingers",
+            "45000000",
+            "7098864.2",
+            "0.15775254",
+            "3.526445"
+          ],
+          [
+            "André Amaro",
+            "Vitória Guimarães SC",
+            "20",
+            "Defensive_Players",
+            "5000000",
+            "801419.1",
+            "0.16028383",
+            "3.495983"
+          ],
+          [
+            "Gilberto",
+            "SL Benfica",
+            "30",
+            "Full_Backs_Wingers",
+            "6000000",
+            "965525.0",
+            "0.16092083",
+            "3.488393"
+          ],
+          [
+            "Stipe Biuk",
+            "Los Angeles FC",
+            "20",
+            "Full_Backs_Wingers",
+            "6500000",
+            "1056998.8",
+            "0.16261520",
+            "3.468350"
+          ],
+          [
+            "Francisco Conceição",
+            "Ajax Amsterdam",
+            "20",
+            "Full_Backs_Wingers",
+            "8000000",
+            "1323795.0",
+            "0.16547438",
+            "3.434997"
+          ],
+          [
+            "Daryl Dike",
+            "West Bromwich Albion",
+            "22",
+            "Striker",
+            "7000000",
+            "1178373.1",
+            "0.16833902",
+            "3.402153"
+          ],
+          [
+            "Marcos Leonardo",
+            "Santos FC",
+            "20",
+            "Striker",
+            "15000000",
+            "2657054.5",
+            "0.17713697",
+            "3.304668"
+          ],
+          [
+            "Mattia Viti",
+            "OGC Nice",
+            "21",
+            "Defensive_Players",
+            "10000000",
+            "1777793.7",
+            "0.17777937",
+            "3.297741"
+          ],
+          [
+            "Adonis Frías",
+            "Club León FC",
+            "25",
+            "Defensive_Players",
+            "4500000",
+            "813961.5",
+            "0.18088032",
+            "3.264650"
+          ],
+          [
+            "Wesley Fofana",
+            "Chelsea FC",
+            "22",
+            "Defensive_Players",
+            "65000000",
+            "12100297.0",
+            "0.18615841",
+            "3.209611"
+          ],
+          [
+            "Santiago Hezze",
+            "CA Huracán",
+            "21",
+            "Defensive_Players",
+            "8000000",
+            "1513286.2",
+            "0.18916078",
+            "3.178994"
+          ],
+          [
+            "Nicolas Pépé",
+            "OGC Nice",
+            "28",
+            "Full_Backs_Wingers",
+            "22000000",
+            "4272341.8",
+            "0.19419736",
+            "3.128710"
+          ],
+          [
+            "Jhon Córdoba",
+            "FK Krasnodar",
+            "30",
+            "Striker",
+            "11000000",
+            "2163832.2",
+            "0.19671202",
+            "3.104090"
+          ],
+          [
+            "Sander Berge",
+            "Sheffield United",
+            "25",
+            "Game_Creator",
+            "20000000",
+            "3986437.3",
+            "0.19932187",
+            "3.078868"
+          ],
+          [
+            "Lucas Gourna-Douath",
+            "Red Bull Salzburg",
+            "19",
+            "Defensive_Players",
+            "12000000",
+            "2404936.7",
+            "0.20041139",
+            "3.068437"
+          ],
+          [
+            "Micky van de Ven",
+            "VfL Wolfsburg",
+            "22",
+            "Defensive_Players",
+            "18000000",
+            "3618293.3",
+            "0.20101630",
+            "3.062670"
+          ],
+          [
+            "Charlie Cresswell",
+            "Millwall FC",
+            "20",
+            "Defensive_Players",
+            "5000000",
+            "1017982.6",
+            "0.20359653",
+            "3.038263"
+          ],
+          [
+            "Wilson Isidor",
+            "Lokomotiv Moscow",
+            "22",
+            "Striker",
+            "6000000",
+            "1228831.5",
+            "0.20480524",
+            "3.026936"
+          ],
+          [
+            "Imrân Louza",
+            "Watford FC",
+            "24",
+            "Game_Creator",
+            "9000000",
+            "1844194.4",
+            "0.20491049",
+            "3.025953"
+          ],
+          [
+            "Simon Kjaer",
+            "AC Milan",
+            "34",
+            "Defensive_Players",
+            "5000000",
+            "1046531.8",
+            "0.20930636",
+            "2.985336"
+          ],
+          [
+            "Jesús Medina",
+            "CSKA Moscow",
+            "26",
+            "Full_Backs_Wingers",
+            "7000000",
+            "1523011.8",
+            "0.21757312",
+            "2.911211"
+          ],
+          [
+            "Owen Wijndal",
+            "Ajax Amsterdam",
+            "23",
+            "Full_Backs_Wingers",
+            "10000000",
+            "2184783.0",
+            "0.21847830",
+            "2.903266"
+          ],
+          [
+            "Josh Sargent",
+            "Norwich City",
+            "23",
+            "Striker",
+            "12000000",
+            "2624995.4",
+            "0.21874961",
+            "2.900891"
+          ],
+          [
+            "Lutsharel Geertruida",
+            "Feyenoord Rotterdam",
+            "22",
+            "Full_Backs_Wingers",
+            "18000000",
+            "3942049.3",
+            "0.21900274",
+            "2.898678"
+          ],
+          [
+            "Cristian Arango",
+            "CF Pachuca",
+            "28",
+            "Striker",
+            "7000000",
+            "1534459.9",
+            "0.21920856",
+            "2.896881"
+          ],
+          [
+            "Fernando",
+            "Red Bull Salzburg",
+            "24",
+            "Striker",
+            "10000000",
+            "2207766.7",
+            "0.22077667",
+            "2.883240"
+          ],
+          [
+            "Kevin Gutiérrez",
+            "Defensa y Justicia",
+            "25",
+            "Defensive_Players",
+            "5500000",
+            "1220814.0",
+            "0.22196619",
+            "2.872958"
+          ],
+          [
+            "Gianluca Prestianni",
+            "CA Vélez Sarsfield",
+            "17",
+            "Full_Backs_Wingers",
+            "5000000",
+            "1113437.7",
+            "0.22268753",
+            "2.866749"
+          ],
+          [
+            "Rodrigo Villagra",
+            "Club Atlético Talleres",
+            "22",
+            "Defensive_Players",
+            "6500000",
+            "1458340.5",
+            "0.22436007",
+            "2.852430"
+          ],
+          [
+            "Ansu Fati",
+            "FC Barcelona",
+            "20",
+            "Full_Backs_Wingers",
+            "35000000",
+            "7945104.7",
+            "0.22700299",
+            "2.830020"
+          ],
+          [
+            "Chiquinho",
+            "SL Benfica",
+            "27",
+            "Game_Creator",
+            "6000000",
+            "1380060.1",
+            "0.23001002",
+            "2.804838"
+          ],
+          [
+            "Gastón Álvarez",
+            "Getafe CF",
+            "23",
+            "Defensive_Players",
+            "5000000",
+            "1161517.4",
+            "0.23230349",
+            "2.785852"
+          ],
+          [
+            "Ângelo",
+            "Santos FC",
+            "18",
+            "Full_Backs_Wingers",
+            "13000000",
+            "3031658.0",
+            "0.23320446",
+            "2.778445"
+          ],
+          [
+            "Anthony Elanga",
+            "Manchester United",
+            "21",
+            "Full_Backs_Wingers",
+            "25000000",
+            "5879335.1",
+            "0.23517341",
+            "2.762356"
+          ],
+          [
+            "Manuel Ugarte",
+            "Sporting CP",
+            "22",
+            "Defensive_Players",
+            "25000000",
+            "5936540.8",
+            "0.23746163",
+            "2.743827"
+          ],
+          [
+            "Neymar",
+            "Paris Saint-Germain",
+            "31",
+            "Full_Backs_Wingers",
+            "70000000",
+            "16727462.6",
+            "0.23896375",
+            "2.731760"
+          ],
+          [
+            "Ismaël Koné",
+            "Watford FC",
+            "20",
+            "Game_Creator",
+            "10000000",
+            "2393896.5",
+            "0.23938965",
+            "2.728352"
+          ],
+          [
+            "Patrik Walemark",
+            "Feyenoord Rotterdam",
+            "21",
+            "Full_Backs_Wingers",
+            "4500000",
+            "1079410.5",
+            "0.23986900",
+            "2.724525"
+          ],
+          [
+            "Ahmetcan Kaplan",
+            "Ajax Amsterdam",
+            "20",
+            "Defensive_Players",
+            "5000000",
+            "1256634.5",
+            "0.25132689",
+            "2.635233"
+          ],
+          [
+            "Josip Stanisic",
+            "Bayern Munich",
+            "23",
+            "Full_Backs_Wingers",
+            "12000000",
+            "3032110.0",
+            "0.25267583",
+            "2.624990"
+          ],
+          [
+            "Tim Iroegbunam",
+            "Queens Park Rangers",
+            "19",
+            "Game_Creator",
+            "5000000",
+            "1287721.2",
+            "0.25754424",
+            "2.588471"
+          ],
+          [
+            "Jeff Reine-Adélaïde",
+            "ESTAC Troyes",
+            "25",
+            "Game_Creator",
+            "7000000",
+            "1817170.9",
+            "0.25959584",
+            "2.573288"
+          ],
+          [
+            "Matías Rojas",
+            "Racing Club",
+            "27",
+            "Game_Creator",
+            "5000000",
+            "1300551.8",
+            "0.26011035",
+            "2.569499"
+          ],
+          [
+            "Hjalmar Ekdal",
+            "Burnley FC",
+            "24",
+            "Defensive_Players",
+            "8000000",
+            "2093999.2",
+            "0.26174990",
+            "2.557475"
+          ],
+          [
+            "Olivier Boscagli",
+            "PSV Eindhoven",
+            "25",
+            "Defensive_Players",
+            "8000000",
+            "2095083.8",
+            "0.26188547",
+            "2.556484"
+          ],
+          [
+            "Carlos Alcaraz",
+            "Southampton FC",
+            "20",
+            "Game_Creator",
+            "12000000",
+            "3147142.2",
+            "0.26226185",
+            "2.553735"
+          ],
+          [
+            "Nico Melamed",
+            "RCD Espanyol Barcelona",
+            "22",
+            "Full_Backs_Wingers",
+            "6000000",
+            "1582721.6",
+            "0.26378693",
+            "2.542640"
+          ],
+          [
+            "Nicolás de la Cruz",
+            "CA River Plate",
+            "26",
+            "Game_Creator",
+            "11000000",
+            "2942344.1",
+            "0.26748583",
+            "2.515993"
+          ],
+          [
+            "Samir Caetano",
+            "Tigres UANL",
+            "28",
+            "Defensive_Players",
+            "7000000",
+            "1882983.6",
+            "0.26899766",
+            "2.505208"
+          ],
+          [
+            "Santiago Sosa",
+            "Atlanta United FC",
+            "24",
+            "Defensive_Players",
+            "5000000",
+            "1346688.2",
+            "0.26933763",
+            "2.502791"
+          ],
+          [
+            "Arthur Masuaku",
+            "Besiktas JK",
+            "29",
+            "Full_Backs_Wingers",
+            "6000000",
+            "1648516.4",
+            "0.27475274",
+            "2.464700"
+          ],
+          [
+            "Morato",
+            "SL Benfica",
+            "21",
+            "Defensive_Players",
+            "15000000",
+            "4134254.5",
+            "0.27561697",
+            "2.458690"
+          ],
+          [
+            "Christos Tzolis",
+            "Norwich City",
+            "21",
+            "Full_Backs_Wingers",
+            "5000000",
+            "1399385.3",
+            "0.27987706",
+            "2.429339"
+          ],
+          [
+            "Nathan Patterson",
+            "Everton FC",
+            "21",
+            "Full_Backs_Wingers",
+            "14000000",
+            "3924700.4",
+            "0.28033575",
+            "2.426205"
+          ],
+          [
+            "Marcelino Núñez",
+            "Norwich City",
+            "23",
+            "Game_Creator",
+            "5000000",
+            "1402633.3",
+            "0.28052667",
+            "2.424902"
+          ],
+          [
+            "Fabián Ruiz",
+            "Paris Saint-Germain",
+            "27",
+            "Game_Creator",
+            "38000000",
+            "10673190.8",
+            "0.28087344",
+            "2.422538"
+          ],
+          [
+            "N'Golo Kanté",
+            "Chelsea FC",
+            "32",
+            "Defensive_Players",
+            "20000000",
+            "5653791.8",
+            "0.28268959",
+            "2.410205"
+          ],
+          [
+            "Giovanni Reyna",
+            "Borussia Dortmund",
+            "20",
+            "Game_Creator",
+            "28000000",
+            "7929061.2",
+            "0.28318076",
+            "2.406883"
+          ],
+          [
+            "Helinho",
+            "Red Bull Bragantino",
+            "23",
+            "Full_Backs_Wingers",
+            "6000000",
+            "1699389.1",
+            "0.28323152",
+            "2.406540"
+          ],
+          [
+            "Cade Cowell",
+            "San Jose Earthquakes",
+            "19",
+            "Full_Backs_Wingers",
+            "5000000",
+            "1417673.7",
+            "0.28353473",
+            "2.404492"
+          ],
+          [
+            "Leny Yoro",
+            "LOSC Lille",
+            "17",
+            "Defensive_Players",
+            "8000000",
+            "2274549.7",
+            "0.28431872",
+            "2.399208"
+          ],
+          [
+            "Piotr Zielinski",
+            "SSC Napoli",
+            "29",
+            "Game_Creator",
+            "40000000",
+            "11636127.2",
+            "0.29090318",
+            "2.355397"
+          ],
+          [
+            "Hugo Ekitiké",
+            "Paris Saint-Germain",
+            "20",
+            "Striker",
+            "25000000",
+            "7290721.0",
+            "0.29162884",
+            "2.350630"
+          ],
+          [
+            "Cucho Hernández",
+            "Columbus Crew",
+            "24",
+            "Striker",
+            "10000000",
+            "2918835.0",
+            "0.29188350",
+            "2.348959"
+          ],
+          [
+            "Axel Tuanzebe",
+            "Stoke City",
+            "25",
+            "Defensive_Players",
+            "4500000",
+            "1318552.9",
+            "0.29301176",
+            "2.341577"
+          ],
+          [
+            "Máximo Perrone",
+            "Manchester City",
+            "20",
+            "Defensive_Players",
+            "10000000",
+            "2936717.6",
+            "0.29367176",
+            "2.337271"
+          ],
+          [
+            "Kayky",
+            "Esporte Clube Bahia",
+            "19",
+            "Full_Backs_Wingers",
+            "9000000",
+            "2648137.0",
+            "0.29423744",
+            "2.333589"
+          ],
+          [
+            "Warren Zaïre-Emery",
+            "Paris Saint-Germain",
+            "17",
+            "Game_Creator",
+            "18000000",
+            "5322446.1",
+            "0.29569145",
+            "2.324156"
+          ],
+          [
+            "Rayan Cherki",
+            "Olympique Lyon",
+            "19",
+            "Game_Creator",
+            "27000000",
+            "8014210.5",
+            "0.29682261",
+            "2.316849"
+          ],
+          [
+            "Zé Rafael",
+            "Sociedade Esportiva Palmeiras",
+            "29",
+            "Game_Creator",
+            "5000000",
+            "1518503.6",
+            "0.30370072",
+            "2.273013"
+          ],
+          [
+            "Jerry St. Juste",
+            "Sporting CP",
+            "26",
+            "Defensive_Players",
+            "13000000",
+            "3954647.5",
+            "0.30420366",
+            "2.269846"
+          ],
+          [
+            "Maxime López",
+            "US Sassuolo",
+            "25",
+            "Defensive_Players",
+            "15000000",
+            "4564125.6",
+            "0.30427504",
+            "2.269397"
+          ],
+          [
+            "Hugo Guillamón",
+            "Valencia CF",
+            "23",
+            "Defensive_Players",
+            "14000000",
+            "4260718.3",
+            "0.30433702",
+            "2.269008"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "conclusiones-del-modelo-random-forest",
+    "title": "Conclusiones del modelo random forest:",
+    "level": 1,
+    "path": [
+      "Conclusiones del modelo random forest:"
+    ],
+    "paragraphs": [
+      "Primero, con los infravalorados estadísticamente significativos, eligiendo jugadores con un mayor valor de 5M, de los cuatro, únicamente uno se ha devaluado, Branco van den Boomen, quien subió de 9M a 12M antes de llegar al Ajax de Amsterdam como agente libre, en septiembre del 2023, club el cual estuvo coqueteando con el descenso esa temporada, lo que no ayudó a su rendimiento y valoración. Los otros tres casos, no llegaron al precio teórico pero se revalorizaron ligeramente con picos de revalorización de 3 y 4 millones. Por otra parte, dallinga si sufrió una revaloración importante, alcanzando un valor de 18M, con un traspaso pagado de 15M por el Bolonia, donde no terminó tampoco de encontrar su lugar.",
+      "En cuanto a los sobrevalorados estadísticamente significativos, encontramos jugadores muy interesantes, por lo general, los jugadores que fueron etiquetados como tal, terminaron cumpliendo esta predicción sin embargo, hay un caso muy interesante, el de Pedri, quien llegó a valer 100 millones en 2023, encadenó lesiones impidiendole competir con normalidad, alcanzando un valor de 80M en marzo del 2024. Aunque este modelo presenta similitudes con la predicción del LASSO, no solo pronostica wonder kids, si no también tiene sensibilidad por los jugones que bajan repentinamente su nivel como Dele Alli, Nicolas Pepe, Ansu Fati o Zielinski. Como observación del top 10 sobrevalorados significativamente, solo uno consiguió aumentar su valor de mercado en la temporada inmediatamente posterior a la de los datos (23/24), este jugador fue Joao Pedro, campeón del mundial de clubes con el Chelsea FC en el año 2025.",
+      "Por último, este modelo tiene un R^2 de 73,3%, siendo mejor que Lasso confirma nuestra hipótesis central: el mercado del fútbol es no lineal. El Random Forest ha logrado capturar patrones que la regresión no veía, nuevamente, lo que queda sin explicar son variables intangibles y estadísticas más detallas. El RMSE, que mide cuánto se equivoca un modelo en promedio, desciende a 0.854, lo que se convierte en aproximadamente 2.35. deshaciendo el logaritmo. El modelo es ahora mucho más fino. Si tasa a un jugador en 10M€, su rango de precio razonable se estrecha considerablemente."
+    ],
+    "code": [],
+    "figures": [],
+    "tables": []
+  }
+]
