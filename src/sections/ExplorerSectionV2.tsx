@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { useMemo, useState } from 'react';
 import { ArrowDownRight, ArrowUpRight, Search, Users, X } from 'lucide-react';
 import { Section } from '../components/Section';
@@ -28,7 +29,7 @@ export function ExplorerSectionV2() {
   const scale = selected ? Math.max(selected.observedValue, selected.estimatedValue, 1) : 1;
   const relativeGap = selected && selected.observedValue > 0 ? selected.difference / selected.observedValue : null;
 
-  return (
+  return <Localized>{(
     <Section id="explorer" eyebrow="The player dossier" title="One player. Two valuations.">
       <p className="dossier-intro">Where does the model see a different value? Explore the historical player comparisons published in the research.</p>
       <div className="dossier">
@@ -67,5 +68,5 @@ export function ExplorerSectionV2() {
       </div>
       <div className="dossier-ranking"><h3>Where the estimates diverge most</h3><p>Largest absolute differences within the current selection.</p><div>{ranking.slice(0, 5).map((player, index) => <button type="button" key={player.id} onClick={() => setSelectedId(player.id)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{player.name}</strong><small>{player.difference >= 0 ? 'Estimated above market' : 'Estimated below market'}</small><b className={player.difference >= 0 ? 'gap-positive' : 'gap-negative'}>{compactEuro(player.difference)}</b></button>)}</div></div>
     </Section>
-  );
+  )}</Localized>;
 }

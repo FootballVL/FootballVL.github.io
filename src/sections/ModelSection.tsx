@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { Section } from '../components/Section';
 import { EChart } from '../charts/EChart';
 import { metricOption } from '../charts/chartOptions';
@@ -7,7 +8,7 @@ import { ModelDiagnostics } from '../components/ModelDiagnostics';
 
 export function ModelSection() {
   const holdoutMetrics = modelMetrics.filter((metric) => metric.validation === '20% holdout');
-  return (
+  return <Localized>{(
     <Section id="model" eyebrow="From patterns to estimates" title="Explain the patterns. Test the predictions.">
       <p className="model-introduction">The research moves from a transparent linear baseline to interactions, regularisation and a forest of non-linear rules. Four specifications appear in the report; their evaluation contexts must remain distinct.</p>
       <div className="model-rationale"><div><h3>Why these methods?</h3><p>The target is a continuous price, so the report sets aside logistic classification. K-nearest neighbours is also set aside because the project prioritises an interpretable account of the variables associated with value.</p></div><div><h3>Two complementary approaches</h3><p>LASSO penalises coefficient size and can shrink redundant terms to zero; this is feature selection, not a significance test. Random Forest averages 100 trees trained with bootstrap samples and random feature choices, allowing effects to change across parts of the population.</p></div></div>
@@ -30,5 +31,5 @@ export function ModelSection() {
       <div className="method-boundaries"><h3>What the evaluation does not establish</h3><p>A random holdout is not a temporal backtest. Both models see the same historical environment, and September league ratings postdate the June source snapshot. Additional checks are needed for time availability, team dependence and performance on future seasons.</p><p>Residual standard error in the two lm() summaries is not held-out RMSE. Exponentiating a log-scale error does not produce a calibrated confidence interval or a guaranteed “reasonable price range”.</p><p>The player-ranking code predicts on the full df_limpio, mixing training and test records. Its ±1.96 standardised-residual threshold is an outlier rule; it does not by itself prove mispricing or establish a valid p-value.</p></div>
       <ModelDiagnostics />
     </Section>
-  );
+  )}</Localized>;
 }

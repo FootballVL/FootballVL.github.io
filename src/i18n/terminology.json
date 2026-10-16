@@ -1,0 +1,18 @@
+{
+  "en": ["Clean sheets", "20% holdout", "Striker", "Game creator", "Goalkeeper", "Defender", "Midfielder", "Forward"],
+  "es": ["Porterías a cero", "Validación reservada (20%)", "Delantero centro", "Organizador", "Portero", "Defensa", "Centrocampista", "Atacante"],
+  "ja": ["クリーンシート", "20%のホールドアウト検証", "ストライカー", "ゲームメーカー", "ゴールキーパー", "ディフェンダー", "ミッドフィールダー", "フォワード"],
+  "fr": ["Matchs sans encaisser de but", "Test sur 20% de données réservées", "Avant-centre", "Meneur de jeu", "Gardien de but", "Défenseur", "Milieu de terrain", "Attaquant"],
+  "de": ["Spiele ohne Gegentor", "20% zurückgehaltene Testdaten", "Mittelstürmer", "Spielgestalter", "Torwart", "Verteidiger", "Mittelfeldspieler", "Angreifer"],
+  "nl": ["Wedstrijden zonder tegendoelpunt", "20% apart gehouden testdata", "Spits", "Spelverdeler", "Doelman", "Verdediger", "Middenvelder", "Aanvaller"],
+  "zh": ["零封场次", "20%留出测试集", "中锋", "组织核心", "守门员", "后卫", "中场", "前锋"],
+  "ko": ["무실점 경기", "20% 홀드아웃 테스트", "스트라이커", "플레이메이커", "골키퍼", "수비수", "미드필더", "공격수"],
+  "pt": ["Jogos sem sofrer gols", "Teste reservado de 20%", "Centroavante", "Armador", "Goleiro", "Defensor", "Meio-campista", "Atacante"],
+  "it": ["Partite senza subire gol", "Test sul 20% di dati riservati", "Centravanti", "Regista", "Portiere", "Difensore", "Centrocampista", "Attaccante"],
+  "ar": ["مباريات بشباك نظيفة", "مجموعة اختبار محجوزة بنسبة 20%", "مهاجم صريح", "صانع ألعاب", "حارس مرمى", "مدافع", "لاعب وسط", "مهاجم"],
+  "hi": ["बिना गोल खाए मैच", "20% अलग रखा गया परीक्षण डेटा", "स्ट्राइकर", "प्लेमेकर", "गोलकीपर", "डिफेंडर", "मिडफील्डर", "फॉरवर्ड"],
+  "ru": ["Матчи без пропущенных голов", "20% отложенных тестовых данных", "Центральный нападающий", "Плеймейкер", "Вратарь", "Защитник", "Полузащитник", "Нападающий"],
+  "tr": ["Gol yemeden tamamlanan maçlar", "%20 ayrılmış test verisi", "Santrfor", "Oyun kurucu", "Kaleci", "Defans oyuncusu", "Orta saha oyuncusu", "Forvet"],
+  "id": ["Laga tanpa kebobolan", "20% data uji yang disisihkan", "Penyerang tengah", "Pengatur permainan", "Penjaga gawang", "Bek", "Gelandang", "Penyerang"],
+  "bn": ["গোল না খাওয়া ম্যাচ", "20% আলাদা রাখা পরীক্ষার ডেটা", "স্ট্রাইকার", "প্লেমেকার", "গোলরক্ষক", "ডিফেন্ডার", "মিডফিল্ডার", "ফরোয়ার্ড"]
+}

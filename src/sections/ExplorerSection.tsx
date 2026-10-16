@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Section } from '../components/Section';
@@ -28,7 +29,7 @@ export function ExplorerSection() {
   const above = filtered.filter((p) => p.difference > 0).sort((a, b) => b.difference - a.difference);
   const below = filtered.filter((p) => p.difference < 0).sort((a, b) => a.difference - b.difference);
 
-  return (
+  return <Localized>{(
     <Section id="explorer" eyebrow="Section 05" title="Market Value Explorer, scoped to recoverable records.">
       <div className="mb-6 border border-line bg-surface p-4 text-sm text-muted">
         The original HTML does not expose the full player-level prediction file. This explorer uses the individual
@@ -123,7 +124,7 @@ export function ExplorerSection() {
         </div>
       </div>
     </Section>
-  );
+  )}</Localized>;
 }
 
 function Ranking({
@@ -135,7 +136,7 @@ function Ranking({
   players: PlayerValuation[];
   onSelect: (player: PlayerValuation) => void;
 }) {
-  return (
+  return <Localized>{(
     <div className="border border-line bg-surface p-5">
       <h3 className="mb-4 text-lg font-semibold text-ink">{title}</h3>
       <div className="space-y-2">
@@ -160,5 +161,5 @@ function Ranking({
         )}
       </div>
     </div>
-  );
+  )}</Localized>;
 }

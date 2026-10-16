@@ -1,0 +1,18 @@
+{
+  "en": { "Goals": "Goals", "Appearances": "Appearances", "League rating": "League rating" },
+  "es": { "Goals": "Goles", "Appearances": "Partidos disputados", "League rating": "Puntuación de la liga", "Age": "Edad", "Height": "Altura", "Mean": "Media", "Median": "Mediana", "Games missed through injury": "Partidos perdidos por lesión", "Penalty": "Penalización", "Fill": "Color", "Red": "Rojo", "Role: game creator": "Rol: organizador", "Role: striker": "Rol: delantero centro", "Variable importance in the Random Forest": "Importancia de las variables en Random Forest", "Random Forest": "Random Forest (bosque aleatorio)" },
+  "ja": { "Goals": "ゴール", "Appearances": "出場試合数", "League rating": "リーグ評価" },
+  "fr": { "Goals": "Buts", "Appearances": "Matchs disputés", "League rating": "Note de la ligue" },
+  "de": { "Goals": "Tore", "Appearances": "Einsätze", "League rating": "Ligabewertung" },
+  "nl": { "Goals": "Doelpunten", "Appearances": "Gespeelde wedstrijden", "League rating": "Competitiebeoordeling" },
+  "zh": { "Goals": "进球数", "Appearances": "出场次数", "League rating": "联赛评分" },
+  "ko": { "Goals": "득점", "Appearances": "출전 경기 수", "League rating": "리그 평점" },
+  "pt": { "Goals": "Gols", "Appearances": "Partidas disputadas", "League rating": "Pontuação da liga" },
+  "it": { "Goals": "Gol", "Appearances": "Presenze", "League rating": "Valutazione del campionato" },
+  "ar": { "Goals": "الأهداف", "Appearances": "المشاركات", "League rating": "تقييم الدوري" },
+  "hi": { "Goals": "गोल", "Appearances": "खेले गए मैच", "League rating": "लीग रेटिंग" },
+  "ru": { "Goals": "Голы", "Appearances": "Сыгранные матчи", "League rating": "Рейтинг лиги" },
+  "tr": { "Goals": "Goller", "Appearances": "Maç sayısı", "League rating": "Lig puanı" },
+  "id": { "Goals": "Gol", "Appearances": "Penampilan", "League rating": "Peringkat liga" },
+  "bn": { "Goals": "গোল", "Appearances": "খেলা ম্যাচের সংখ্যা", "League rating": "লিগ রেটিং" }
+}

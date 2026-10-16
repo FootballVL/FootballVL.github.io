@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { useState } from 'react';
 import { Pause, Play } from 'lucide-react';
 import { useReducedMotion } from 'framer-motion';
@@ -15,7 +16,7 @@ const players = [
 
 function ValuationSlide({ player, eager }: { player: PlayerValuation; eager: boolean }) {
   const maxValue = Math.max(player.observedValue, player.estimatedValue, 1);
-  return (
+  return <Localized>{(
     <div className="valuation-slide" role="listitem">
       <PlayerPortrait id={player.id} name={player.name} credit={false} eager={eager} />
       <div className="valuation-photo-overlay">
@@ -29,7 +30,7 @@ function ValuationSlide({ player, eager }: { player: PlayerValuation; eager: boo
         </p>
       </div>
     </div>
-  );
+  )}</Localized>;
 }
 
 export function HeroCarousel() {
@@ -37,7 +38,7 @@ export function HeroCarousel() {
   const [paused, setPaused] = useState(false);
   const moving = !paused && !reducedMotion;
 
-  return (
+  return <Localized>{(
     <div className="continuous-carousel" role="region" aria-label="Historical player valuation gallery">
       <div className="valuation-film-window" tabIndex={reducedMotion ? 0 : undefined} aria-label={reducedMotion ? 'Scrollable player gallery' : undefined}>
         <div className="valuation-film-track" data-moving={moving} style={{ animationPlayState: moving ? 'running' : 'paused' }}>
@@ -57,5 +58,5 @@ export function HeroCarousel() {
         </button>
       </div>
     </div>
-  );
+  )}</Localized>;
 }

@@ -1,0 +1,33 @@
+.nav-utilities { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.translated-figure { display: block; width: 100%; height: auto; background: white; direction: ltr; }
+.localised-source-figure figcaption { flex-wrap: wrap; gap: 12px; }
+.localised-source-figure figcaption button { display: inline-flex; align-items: center; gap: 6px; font: inherit; }
+.localised-source-figure figcaption > span { margin-inline-end: auto; }
+.figure-dialog { width: min(96vw, 1500px); max-width: 96vw; max-height: 94vh; padding: 16px; background: white; color: #222925; border: 1px solid var(--rule); }
+.figure-dialog::backdrop { background: rgb(20 30 25 / 75%); }
+.figure-dialog-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.figure-dialog-toolbar button { padding: 8px; }
+.source-language-note { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.variable-glossary dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 12px; overflow-wrap: anywhere; }
+.resources-link { display: flex; }
+.language-picker { position: relative; }
+.language-picker label { display: flex; align-items: center; gap: 7px; color: var(--ink); }
+.language-picker select { background: transparent; color: var(--ink); font-size: 12px; padding: 8px 16px 8px 0; max-width: 140px; cursor: pointer; border: 0; }
+.language-picker select:disabled { opacity: .6; cursor: wait; }
+.language-picker > p { position: absolute; inset-inline-end: 0; top: 100%; background: var(--paper); padding: 14px; border: 1px solid var(--red); min-width: 220px; font-size: 12px; }
+html:not(:lang(en)) .site-nav nav > a:first-child { font-size: 11px; }
+html:lang(ja), html:lang(zh), html:lang(ko), html:lang(ar), html:lang(hi), html:lang(bn) { font-family: 'IBM Plex Sans', 'Yu Gothic', 'Microsoft YaHei', 'Malgun Gothic', Arial, sans-serif; }
+html:lang(ja) .chapter-heading h2, html:lang(zh) .chapter-heading h2, html:lang(ko) .chapter-heading h2, html:lang(ar) .chapter-heading h2, html:lang(hi) .chapter-heading h2, html:lang(bn) .chapter-heading h2 { font-family: 'IBM Plex Sans', 'Yu Gothic', 'Microsoft YaHei', 'Malgun Gothic', Arial, sans-serif; font-size: 42px; line-height: 1.4; }
+html:not(:lang(en)) .model-results-grid h3 { min-height: 92px; }
+html:not(:lang(en)) .model-stat-pair span { line-height: 1.6; }
+html:not(:lang(en)) h2, html:not(:lang(en)) h3, html:not(:lang(en)) h4 { overflow-wrap: anywhere; hyphens: auto; }
+html:not(:lang(en)) .player-index-row { min-height: 76px; }
+html[dir='rtl'] .atlas-index { border-right: 0; border-left: 1px solid var(--rule); padding-left: 20px; padding-right: 0; }
+html[dir='rtl'] .atlas-index button { text-align: right; }
+html[dir='rtl'] .source-table-scroll, html[dir='rtl'] pre, html[dir='rtl'] .valuation-film-window { direction: ltr; }
+html[dir='rtl'] .valuation-photo-overlay { direction: rtl; }
+html[dir='rtl'] .valuation-photo-overlay dd, html[dir='rtl'] .valuation-photo-overlay > p strong, html[dir='rtl'] .hero-stats strong, html[dir='rtl'] .model-stat-pair strong, html[dir='rtl'] .player-estimate, html[dir='rtl'] .player-observed strong, html[dir='rtl'] .value-comparison strong, html[dir='rtl'] .player-gap > span, html[dir='rtl'] .dossier-ranking b { direction: ltr; unicode-bidi: isolate; }
+@media(max-width:1200px) { .site-nav nav > div.hidden.md\:flex { gap: 0; } .site-nav nav > div.hidden.md\:flex a { padding-left: 7px; padding-right: 7px; font-size: 12px; } .nav-utilities { gap: 12px; } }
+@media(max-width:1000px) { .site-nav nav > a:first-child { font-size: 0 !important; gap: 0; } .brand-stamp { font-size: 28px; border: 0; padding-right: 0; } }
+@media(max-width:1100px) { .site-nav nav > div.hidden.md\:flex { display: none; } .site-nav button.md\:hidden { display: block; } #mobile-navigation.md\:hidden { display: grid; } }
+@media(max-width:767px) { .site-nav nav { gap: 10px; } .nav-utilities { margin-left: auto; gap: 12px; } .resources-link { font-size: 10px; } .resources-link svg { display: none; } .language-picker select { font-size: 11px; max-width: 116px; } .language-picker label { gap: 5px; } html:not(:lang(en)) .model-results-grid h3 { min-height: 0; } html:lang(ja) .chapter-heading h2, html:lang(zh) .chapter-heading h2, html:lang(ko) .chapter-heading h2, html:lang(ar) .chapter-heading h2, html:lang(hi) .chapter-heading h2, html:lang(bn) .chapter-heading h2 { font-size: 30px; } }

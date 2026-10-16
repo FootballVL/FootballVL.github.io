@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { ExternalLink } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Section } from '../components/Section';
@@ -24,7 +25,7 @@ const future = [
 
 export function ResearchSection() {
   const { topics } = useResearchArchive();
-  return (
+  return <Localized>{(
     <Section id="research" eyebrow="The final whistle" title="What the numbers explain. What they leave open.">
       <div className="research-takeaways">{researchTakeaways.map((takeaway, index) => <article key={takeaway.title}><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{takeaway.title}</h3><p>{takeaway.text}</p></div></article>)}</div>
       <div className="retrospective-notes"><h3>Where the author looked next</h3><p>The report includes retrospective player case notes, rather than a complete dated valuation panel. These are the author’s accounts, not an independently reproduced temporal validation.</p><div>{retrospectiveCases.map((item) => <article key={item.player}><h4>{item.player}</h4><strong>{item.finding}</strong><p>{item.interpretation}</p></article>)}</div></div>
@@ -56,25 +57,25 @@ export function ResearchSection() {
       </div>
       <PhotoCredits />
     </Section>
-  );
+  )}</Localized>;
 }
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
-  return (
+  return <Localized>{(
     <article className="border-t border-line py-5 text-sm leading-6 text-muted">
       <h3 className="mb-4 text-xl font-semibold text-ink">{title}</h3>
       <div className="space-y-3">{children}</div>
     </article>
-  );
+  )}</Localized>;
 }
 
 function Resource({ label, value }: { label: string; value: string }) {
-  return value ? (
+  return <Localized>{value ? (
     <a className="flex items-center justify-between border-b border-line py-4 text-sm text-ink" href={value}>
       {label}
       <ExternalLink className="h-4 w-4 text-accent" />
     </a>
   ) : (
     <div className="border-b border-line py-4 text-sm text-muted">{label} <span className="block text-xs mt-1">Link not yet published</span></div>
-  );
+  )}</Localized>;
 }

@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
@@ -13,7 +14,7 @@ export function Section({
   children: ReactNode;
 }) {
   const reducedMotion = useReducedMotion();
-  return (
+  return <Localized>{(
     <motion.section
       id={id}
       className="relative py-20 md:py-28"
@@ -30,5 +31,5 @@ export function Section({
         <div className="mt-10">{children}</div>
       </div>
     </motion.section>
-  );
+  )}</Localized>;
 }

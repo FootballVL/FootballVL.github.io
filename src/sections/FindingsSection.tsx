@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { Section } from '../components/Section';
 import { EChart } from '../charts/EChart';
 import { barOption } from '../charts/chartOptions';
@@ -5,7 +6,7 @@ import { correlations, insights } from '../data/research';
 import { AnalysisAtlas } from '../components/AnalysisAtlas';
 
 export function FindingsSection() {
-  return (
+  return <Localized>{(
     <Section id="findings" eyebrow="Reading the market" title="Performance has a price. Context changes it.">
       <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-5">
@@ -36,5 +37,5 @@ export function FindingsSection() {
       </div>
       <AnalysisAtlas />
     </Section>
-  );
+  )}</Localized>;
 }

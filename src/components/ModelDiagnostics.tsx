@@ -1,6 +1,8 @@
+import { Localized } from '../i18n/I18nProvider';
 import { useState } from 'react';
 import { useResearchArchive } from '../hooks/useResearchArchive';
 import { ResearchEvidence } from './ResearchEvidence';
+import { LocalizedResearchFigure } from './LocalizedResearchFigure';
 
 const diagnostics = [
   { title: 'LASSO penalty search', topic: 54, figure: 0, description: 'A 51-value penalty grid is evaluated on ten training folds. The code fits the reported LASSO with a fixed penalty of 0.001389495 before displaying the tuning experiment; no printed select_best() step links that fixed value to this search.' },
@@ -15,11 +17,11 @@ export function ModelDiagnostics() {
   const diagnostic = diagnostics[selected];
   const topic = topics[diagnostic.topic];
   const figure = topic?.figures[diagnostic.figure];
-  return <div className="model-diagnostics">
+  return <Localized>{<div className="model-diagnostics">
     <div className="atlas-intro"><div><p className="dossier-kicker">OPEN THE ENGINE ROOM</p><h3>How the models were built.</h3></div><p>The original tuning curves, feature-importance plot and teaching tree make the modelling process inspectable.</p></div>
     <div className="diagnostic-tabs" role="group" aria-label="Model diagnostic">{diagnostics.map((item, index) => <button type="button" key={item.title} aria-pressed={index === selected} onClick={() => setSelected(index)}>{item.title}</button>)}</div>
     <p className="diagnostic-description">{diagnostic.description}</p>
-    {figure && <figure className="original-figure"><a href={`${import.meta.env.BASE_URL}${figure.src}`} target="_blank" rel="noreferrer"><img src={`${import.meta.env.BASE_URL}${figure.src}`} alt={`${diagnostic.title}. ${diagnostic.description}`} loading="lazy" decoding="async" /></a><figcaption>Original R output / open image for full resolution</figcaption></figure>}
+    {figure && <LocalizedResearchFigure src={figure.src} title={diagnostic.title} />}
     {topic && <ResearchEvidence topic={topic} />}
-  </div>;
+  </div>}</Localized>;
 }

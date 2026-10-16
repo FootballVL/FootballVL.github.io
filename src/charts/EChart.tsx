@@ -4,6 +4,8 @@ import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
+import { useI18n } from '../i18n/I18nProvider';
+import { translateChartOption } from '../i18n/chartTranslation';
 
 interface EChartProps {
   option: EChartsOption;
@@ -24,12 +26,13 @@ echarts.use([
 ]);
 
 export function EChart({ option, height = 360, ariaLabel, onClick }: EChartProps) {
+  const { t } = useI18n();
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
     const chart = echarts.init(ref.current, undefined, { renderer: 'canvas' });
-    chart.setOption(option);
+    chart.setOption(translateChartOption(option, t));
     if (onClick) chart.on('click', onClick);
     const resize = () => chart.resize();
     const observer = new ResizeObserver(resize);
@@ -40,7 +43,7 @@ export function EChart({ option, height = 360, ariaLabel, onClick }: EChartProps
       observer.disconnect();
       chart.dispose();
     };
-  }, [option, onClick]);
+  }, [option, onClick, t]);
 
-  return <div ref={ref} role="img" aria-label={ariaLabel} style={{ height, minWidth: 0 }} className="w-full" />;
+  return <div ref={ref} role="img" aria-label={t(ariaLabel)} style={{ height, minWidth: 0 }} className="w-full" />;
 }

@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { Section } from '../components/Section';
 import { EChart } from '../charts/EChart';
 import { barOption } from '../charts/chartOptions';
@@ -8,7 +9,7 @@ const pipeline = ['Raw Dataset', 'Data Cleaning', 'Feature Engineering', 'Explor
 const variables = ['age', 'height', 'minutes.played', 'goals_abs', 'assists_abs', 'award', 'games_injured', 'league_rating', 'rol_funcional'];
 
 export function DataSection() {
-  return (
+  return <Localized>{(
     <Section id="data" eyebrow="The research" title="10,754 players. One complex question.">
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-6 text-muted">
@@ -54,5 +55,5 @@ export function DataSection() {
       </div>
       <DataPreparation />
     </Section>
-  );
+  )}</Localized>;
 }

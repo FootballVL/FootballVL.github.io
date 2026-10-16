@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { ArrowDown, BarChart3, BookOpen, Search } from 'lucide-react';
 import { EChart } from '../charts/EChart';
 import { barOption } from '../charts/chartOptions';
@@ -6,7 +7,7 @@ import { StatPill } from '../components/StatPill';
 
 export function Hero() {
   const topSignals = correlations.slice(0, 6);
-  return (
+  return <Localized>{(
     <section id="hero" className="relative overflow-hidden py-16 md:py-24">
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(90deg,rgba(181,243,106,.12)_1px,transparent_1px),linear-gradient(rgba(37,56,75,.65)_1px,transparent_1px)] [background-size:96px_96px]" />
       <div className="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
@@ -56,5 +57,5 @@ export function Hero() {
         Scroll <ArrowDown className="h-4 w-4 animate-bounce" />
       </a>
     </section>
-  );
+  )}</Localized>;
 }

@@ -1,10 +1,11 @@
+import { Localized } from '../i18n/I18nProvider';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { projectStats } from '../data/research';
 import { HeroCarousel } from '../components/HeroCarousel';
 
 export function HeroEditorial() {
 
-  return (
+  return <Localized>{(
     <section id="hero" className="editorial-hero">
       <div className="hero-masthead"><span>FOOTBALL. STATISTICS. PERSPECTIVE.</span><span>FIELD NOTES / 2021–2023</span></div>
       <h1 className="cover-title">FOOTBALL <span>VALUE LAB</span><span className="cover-period" aria-hidden="true">.</span></h1>
@@ -21,5 +22,5 @@ export function HeroEditorial() {
       </div>
       <div className="cover-next"><a href="#findings">Explore the findings <ArrowDown size={16} /></a><a href="#research">Research & code <ArrowUpRight size={16} /></a></div>
     </section>
-  );
+  )}</Localized>;
 }

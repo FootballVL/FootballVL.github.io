@@ -1,3 +1,4 @@
+import { Localized } from '../i18n/I18nProvider';
 import { useState } from 'react';
 import photoData from '../data/photos.json';
 
@@ -22,7 +23,7 @@ export function PlayerPortrait({ id, name, credit = true, eager = false }: {
   const [failed, setFailed] = useState(false);
   const photo = playerPhotos[id];
 
-  return (
+  return <Localized>{(
     <figure className="player-portrait">
       {photo && !failed ? (
         <img
@@ -42,11 +43,11 @@ export function PlayerPortrait({ id, name, credit = true, eager = false }: {
         </figcaption>
       )}
     </figure>
-  );
+  )}</Localized>;
 }
 
 export function PhotoCredits() {
-  return (
+  return <Localized>{(
     <details className="photo-credits">
       <summary>Photography & type credits</summary>
       <p>Real photographs from Wikimedia Commons, stored locally. Photographs may come from a different season or national team; club and age labels in the explorer refer to the historical research. Images are cropped for display, without altering the original files.</p>
@@ -60,5 +61,5 @@ export function PhotoCredits() {
       </ul>
       <p>Barlow Condensed, IBM Plex Sans and IBM Plex Mono are self-hosted under the SIL Open Font License. License texts are included with the font files.</p>
     </details>
-  );
+  )}</Localized>;
 }

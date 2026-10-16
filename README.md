@@ -88,7 +88,7 @@ The displayed copies are resized and encoded as WebP. Original downloaded photog
 
 ## Research Archive
 
-The supplied HTML was parsed as an inert document: its scripts were not executed. The extraction yields 58 heading entries, 42 embedded images (one report cover, 37 EDA figures, four model figures) and 13 tables. Original figures retain their labels; English summaries and reading notes are in `src/content/research.ts`.
+The supplied HTML was parsed as an inert document: its scripts were not executed. The extraction yields 58 heading entries, 42 embedded images (one report cover, 37 EDA figures, four model figures) and 13 tables. Original PNGs remain unmodified. Their 41 analytical figures are displayed with translated SVG annotation layers; editorial summaries and reading notes are in `src/content/research.ts`.
 
 `src/data/reportArchive.json` contains the extracted paragraphs, R code, printed output, table data and source anchors. It loads as a separate JavaScript chunk. Figures are lazy-loaded from `public/research/figures/`. The complete original report is downloadable from `public/research/original-report.html`.
 
@@ -99,3 +99,19 @@ node scripts/extract-research.mjs path/to/Proyecto_final.html
 ```
 
 Playwright is only an extraction/test tool; it is not required for the published application. The curated atlas uses source-heading indices, so review those mappings if the report structure changes. See `docs/research-audit.md` for provenance and methodological qualifications.
+
+## Languages
+
+The upper-right language picker offers 16 local editions, including Spanish,
+English, Japanese, French, German, Dutch, Simplified Chinese, Korean and Arabic.
+Resources sits to its left. Selection persists across visits; Arabic uses RTL.
+Narrative, source discussion, table headings, filters and chart annotations
+translate without changing the data or requiring an external translation API.
+Language dictionaries are separate chunks loaded only when selected.
+
+R syntax, verbatim console output, proper names and the downloadable Spanish
+source remain unchanged. Localised explanations and a variable glossary explain
+the technical identifiers. Translations were initially machine-prepared with
+permission, with curated domain terminology; native-speaker editorial review
+is still recommended. See `docs/localization.md` for scope, preservation of
+numeric evidence, maintenance, regeneration and optional browser QA.
