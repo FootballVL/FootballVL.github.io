@@ -146,6 +146,7 @@ for (const language of languageArgument ? [languageArgument] : languages) {
   }
   for (const [index, term] of terms.entries()) messages[term] = reviewed[index];
   Object.assign(messages, overrides[language]);
+  if (language === 'es') for (const key of Object.keys(messages)) messages[key] = messages[key].replace(/goles de fútbol/gi, 'goles');
   for (const term of ['R²', 'RMSE', 'MAE', 'LASSO']) if (keys.includes(term)) messages[term] = term;
   const output = Object.fromEntries(keys.map((key) => [key, messages[key]]));
   for (const [key, meaning] of Object.entries(aliases)) output[key] = messages[meaning] ?? meaning;
