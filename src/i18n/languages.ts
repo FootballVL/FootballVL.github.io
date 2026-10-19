@@ -1,6 +1,6 @@
 export const languages = [
-  { code: 'en', name: 'English' },
   { code: 'es', name: 'Español' },
+  { code: 'en', name: 'English' },
   { code: 'ja', name: '日本語' },
   { code: 'fr', name: 'Français' },
   { code: 'de', name: 'Deutsch' },

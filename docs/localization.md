@@ -2,7 +2,8 @@
 
 ## Scope
 
-The header offers English, Spanish, Japanese, French, German, Dutch, Chinese
+Spanish is the default and authoritative editorial edition. The header offers
+Spanish, English, Japanese, French, German, Dutch, Chinese
 (Simplified), Korean, Portuguese, Italian, Arabic, Hindi, Russian, Turkish,
 Indonesian and Bengali. Resources remains immediately to the left of the picker.
 The choice is saved in localStorage, and Arabic sets the document to RTL.
@@ -22,18 +23,24 @@ Spanish original open the unmodified source, not another translated edition.
 
 ## Translation Provenance
 
-Initial prose translations were prepared using Google Translate with explicit
-source languages, with the owner's permission. They are committed as JSON;
-the deployed site never calls a translation service. English interface copy is
-retained verbatim. `terminology.json` provides curated football and validation
-terminology, including clean sheets, player roles and reserved test data.
-Domain idioms are disambiguated in the preparation script.
+`src/content/es.json` is the Spanish master catalogue. The research voice is
+authored in `src/content/author.es.json` and interface revisions in
+`src/content/interface.es.json`. They use first-person copy and are applied to
+stable message identifiers before any translation. Some identifiers remain
+English for backwards compatibility; their English wording is not the source
+of the translated editions. New interface copy is written in Spanish.
+
+The preparation script copies the Spanish edition directly from that source,
+without sending it through machine translation. The other fifteen editions
+are generated with `sl=es` using Google Translate, with the owner's permission,
+then committed locally. The deployed site never calls a translation service.
+Curated terminology and label overrides retain established football meanings.
 
 These editions have not all received professional native-speaker review.
 Technical implementation and catalogue coverage are tested, but that does not
 certify every linguistic nuance. Review scientific terminology and long-form
 translations with native speakers before treating an edition as authoritative.
-The report and the English editorial analysis remain available for comparison.
+The original report and authored Spanish edition remain the reference.
 
 ## Source Figure Strategy
 
@@ -59,6 +66,9 @@ recovered arrays and localise their labels independently of those numeric arrays
 ## Maintenance
 
 - `src/i18n/languages.ts`: offered languages and native labels.
+- `src/content/es.json`: Spanish master source, never machine-generated anew.
+- `src/content/author.es.json`: personally authored research interpretations.
+- `src/content/interface.es.json`: authored interface and narrative revisions.
 - `src/i18n/locales/*.json`: complete local dictionaries, loaded on demand.
 - `src/i18n/glossary.ts`: source identifier to semantic label mapping.
 - `src/i18n/terminology.json`: curated terminology by language.
@@ -71,8 +81,9 @@ Run `npm run lint` to check TypeScript and all catalogue keys/source paragraphs.
 Ordinary builds need no translation credentials or network requests. To
 regenerate catalogues, explicitly approve sending the source text to Google,
 then run `node scripts/build-translations.mjs`. The script caches preparation
-results under ignored `work/`; `--language=es` limits it to one language and
-`--refresh-domain` refreshes ambiguous domain phrases. Review generated changes
+results by Spanish source text under ignored `work/translations-from-spanish/`;
+`--language=es` synchronises only Spanish, locally and without network access.
+Changing Spanish source text invalidates the relevant cached translation. Review generated changes
 before committing. Do not use the regeneration script with confidential source
 material without authorisation.
 

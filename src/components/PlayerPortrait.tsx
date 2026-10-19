@@ -24,7 +24,8 @@ export function PlayerPortrait({ id, name, credit = true, eager = false }: {
   const photo = playerPhotos[id];
 
   return <Localized>{(
-    <figure className="player-portrait">
+    <figure className="player-portrait" data-player={id}>
+      <div className="portrait-image">
       {photo && !failed ? (
         <img
           src={`${import.meta.env.BASE_URL}${photo.src}`}
@@ -36,6 +37,7 @@ export function PlayerPortrait({ id, name, credit = true, eager = false }: {
           onError={() => setFailed(true)}
         />
       ) : <div className="photo-unavailable">Photograph unavailable</div>}
+      </div>
       {credit && photo && (
         <figcaption>
           <a href={photo.sourceUrl} target="_blank" rel="noreferrer">Photo: {photo.author}</a>

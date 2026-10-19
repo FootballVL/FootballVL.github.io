@@ -11,20 +11,23 @@ import { PlayerPortrait } from '../components/PlayerPortrait';
 
 const leagues = [...new Set(players.map((player) => player.league).filter(Boolean))];
 const roles = [...new Set(players.map((player) => player.role))];
+const searchable = (value: string) => value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase();
+const focusIds = new Set(['deniz-undav', 'mario-gotze', 'sergio-camello', 'dele-alli', 'alejandro-balde', 'nicolas-pepe', 'ansu-fati', 'giovanni-reyna', 'piotr-zielinski', 'leny-yoro', 'hugo-guillamon']);
 
 export function ExplorerSectionV2() {
   const [query, setQuery] = useState('');
   const [league, setLeague] = useState('All');
   const [role, setRole] = useState('All');
   const [selectedId, setSelectedId] = useState(players[0]?.id);
+  const [rankingScope, setRankingScope] = useState<'focus' | 'all'>('focus');
   const filtered = useMemo(() => players.filter((player) =>
-    `${player.name} ${player.team ?? ''}`.toLowerCase().includes(query.toLowerCase()) &&
-    (league === 'All' || player.league === league) &&
+    searchable(`${player.name} ${player.team ?? ''}`).includes(searchable(query.trim())) &&
+    (league === 'All' || (league === 'Unpublished' ? !player.league : player.league === league)) &&
     (role === 'All' || player.role === role)
   ), [query, league, role]);
   // Keep the dossier inside the filtered population when a filter changes.
   const selected = filtered.find((player) => player.id === selectedId) ?? filtered[0];
-  const ranking = [...filtered].sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
+  const ranking = filtered.filter((player) => rankingScope === 'all' || focusIds.has(player.id)).sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
   const reset = () => { setQuery(''); setLeague('All'); setRole('All'); };
   const scale = selected ? Math.max(selected.observedValue, selected.estimatedValue, 1) : 1;
   const relativeGap = selected && selected.observedValue > 0 ? selected.difference / selected.observedValue : null;
@@ -36,7 +39,7 @@ export function ExplorerSectionV2() {
         <div className="dossier-toolbar">
           <div className="dossier-wordmark"><Users size={18} /><span>PLAYER INDEX</span><small>2023 ARCHIVE</small></div>
           <label className="dossier-search"><Search size={17} /><span className="sr-only">Search player or club</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search player or club" /></label>
-          <label><span className="sr-only">League</span><select aria-label="League" value={league} onChange={(event) => setLeague(event.target.value)}><option value="All">All leagues</option>{leagues.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
+          <label><span className="sr-only">League</span><select aria-label="League" value={league} onChange={(event) => setLeague(event.target.value)}><option value="All">All leagues</option>{leagues.map((item) => <option key={item} value={item}>{item}</option>)}<option value="Unpublished">Liga no publicada</option></select></label>
           <label><span className="sr-only">Position</span><select aria-label="Position" value={role} onChange={(event) => setRole(event.target.value)}><option value="All">All positions</option>{roles.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
           <button type="button" className="dossier-reset" title="Reset filters" aria-label="Reset filters" onClick={reset}><X size={18} /></button>
         </div>
@@ -46,7 +49,7 @@ export function ExplorerSectionV2() {
             {filtered.map((player, index) => <button type="button" key={player.id} aria-pressed={selected?.id === player.id} onClick={() => setSelectedId(player.id)} className={selected?.id === player.id ? 'player-index-row is-selected' : 'player-index-row'}><span className="index-number">{String(index + 1).padStart(2, '0')}</span><span><strong>{player.name}</strong><small>{player.team ?? player.role}</small></span><span className={player.difference >= 0 ? 'gap-positive' : 'gap-negative'}>{player.difference >= 0 ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}</span></button>)}
           </aside>
           {selected ? <article className="player-dossier" aria-label={`${selected.name} valuation dossier`}>
-            <header className="player-dossier-header"><span>{selected.team ?? 'Player comparison'}</span><span>{selected.league ?? 'Historical sample'} / {selected.role}</span></header>
+            <header className="player-dossier-header"><span>{selected.team ?? 'Player comparison'}</span><span>{selected.league ?? 'Liga no publicada'} / {selected.role}</span></header>
             <div className="player-dossier-main">
               <div className="player-identity">
                 <p className="dossier-kicker">PLAYER IN FOCUS</p>
@@ -64,9 +67,10 @@ export function ExplorerSectionV2() {
             <div className="dossier-map"><div className="dossier-chart-heading"><h4>The valuation map</h4><span>OBSERVED / ESTIMATED</span></div><EChart ariaLabel="Observed and Random Forest estimated values for the filtered historical records" option={valuationScatter(filtered)} height={330} onClick={(event: unknown) => { const params = event as { dataIndex?: number; seriesIndex?: number }; if (params.seriesIndex === 1 && params.dataIndex != null && filtered[params.dataIndex]) setSelectedId(filtered[params.dataIndex].id); }} /><p>The reference line marks equal valuations. Select a player from the shortlist to read the comparison.</p></div>
           </article> : <div className="dossier-empty"><Search size={30} /><h3>No matching players</h3><p>Try a different name, league or position.</p><button type="button" onClick={reset}>Reset filters</button></div>}
         </div>
+        <p className="dossier-data-availability">Conservo las cifras publicadas en mis tablas. Cuando una fila no incluye minutos o liga, lo indico como no disponible: no completo esos campos con datos de otra temporada.</p>
         <footer className="dossier-footer"><span>{players.length} published comparisons</span><p>Selected records recovered from the report, not a representative sample of all 10,754 players. The ranking workflow predicts on the full modelling population, mixing training and test records. These individual comparisons are not all held-out predictions.</p></footer>
       </div>
-      <div className="dossier-ranking"><h3>Where the estimates diverge most</h3><p>Largest absolute differences within the current selection.</p><div>{ranking.slice(0, 5).map((player, index) => <button type="button" key={player.id} onClick={() => setSelectedId(player.id)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{player.name}</strong><small>{player.difference >= 0 ? 'Estimated above market' : 'Estimated below market'}</small><b className={player.difference >= 0 ? 'gap-positive' : 'gap-negative'}>{compactEuro(player.difference)}</b></button>)}</div></div>
+      <div className="dossier-ranking"><h3>Where the estimates diverge most</h3><div className="ranking-scope" role="group" aria-label="Perfiles de la clasificación"><button type="button" aria-pressed={rankingScope === 'focus'} onClick={() => setRankingScope('focus')}>Perfiles destacados</button><button type="button" aria-pressed={rankingScope === 'all'} onClick={() => setRankingScope('all')}>Los veinte jugadores</button></div><p>{rankingScope === 'focus' ? 'Las mayores diferencias absolutas entre los once perfiles incorporados a esta selección, respetando los filtros activos.' : 'Largest absolute differences within the current selection.'}</p><div>{ranking.slice(0, 5).map((player, index) => <button type="button" key={player.id} onClick={() => setSelectedId(player.id)}><span>{String(index + 1).padStart(2, '0')}</span><strong>{player.name}</strong><small>{player.difference >= 0 ? 'Estimated above market' : 'Estimated below market'}</small><b className={player.difference >= 0 ? 'gap-positive' : 'gap-negative'}>{compactEuro(player.difference)}</b></button>)}</div>{!ranking.length && <p>No hay perfiles destacados con estos filtros. Puedes consultar los veinte jugadores.</p>}</div>
     </Section>
   )}</Localized>;
 }

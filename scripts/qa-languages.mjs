@@ -16,6 +16,7 @@ const change = async (language) => {
 };
 try {
   await page.goto(url, { waitUntil: 'networkidle' });
+  assert.equal(await page.locator('html').getAttribute('lang'), 'es', 'Spanish must be the initial edition');
   const numbers = await page.locator('.model-stat-pair strong').allTextContents();
   const values = await page.locator('.hero-stats strong').allTextContents();
   let checked = 0;
@@ -24,6 +25,7 @@ try {
     await change(language);
     assert.equal(await page.locator('.resources-link').innerText(), dictionary.Resources);
     assert.equal(await page.locator('.cover-tagline').innerText(), dictionary['Beyond the Price Tag.']);
+    assert.equal(await page.locator('.model-criterion').innerText(), dictionary['Mi criterio de selección es |z| > 1,96 en los residuos estandarizados. Lo utilizo como señal para investigar perfiles, no como un intervalo de confianza individual validado.']);
     assert.deepEqual(await page.locator('.model-stat-pair strong').allTextContents(), numbers, `${language}: numeric metrics changed`);
     assert.deepEqual(await page.locator('.hero-stats strong').allTextContents(), values, `${language}: study totals changed`);
     assert.equal(await page.locator('.valuation-film-group').first().locator('.valuation-slide h2').first().innerText(), 'Thijs Dallinga');
@@ -31,7 +33,7 @@ try {
     assert.equal(await page.locator('.translated-figure').first().getAttribute('role'), 'img');
     assert((await page.locator('.translated-figure').first().textContent()).includes(dictionary['Awards distribution']));
     await page.locator('.dossier-toolbar select').nth(1).selectOption('Striker');
-    assert.equal(await page.locator('.dossier-index .player-index-row').count(), 6);
+    assert.equal(await page.locator('.dossier-index .player-index-row').count(), 5);
     await page.locator('.dossier-toolbar select').nth(1).selectOption('All');
     for (const width of [1440, 768, 390, 320]) {
       await page.setViewportSize({ width, height: 1000 });

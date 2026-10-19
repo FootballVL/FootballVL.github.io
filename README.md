@@ -115,3 +115,39 @@ the technical identifiers. Translations were initially machine-prepared with
 permission, with curated domain terminology; native-speaker editorial review
 is still recommended. See `docs/localization.md` for scope, preservation of
 numeric evidence, maintenance, regeneration and optional browser QA.
+
+Spanish is now the default and editorial source. Edit `src/content/es.json`,
+`src/content/author.es.json` and `src/content/interface.es.json`; all other
+editions are generated from the reviewed Spanish text, never the reverse.
+`node scripts/build-translations.mjs --language=es` synchronises Spanish without
+network access. Existing saved language choices remain respected.
+
+## Authored Research Edition
+
+The cover prominently labels the 2021/22 and 2022/23 seasons. Narrative and
+conclusions use the researcher's own first-person voice. The 95% reference is
+described as the standardised-residual threshold `|z| > 1.96`, not as a validated
+individual confidence interval. Dallinga's retrospective 7-to-18 million increase
+is approximately 157%; it is described as movement towards the estimate, not
+an independent validation or proof of exact convergence.
+
+`src/data/playerSelection.json` holds the twenty selected profiles, including
+the eleven replacements requested for this edition. Regenerate them directly
+from the published Random Forest tables with
+`node scripts/select-player-records.mjs`. Missing leagues and playing-time
+fields remain absent, with explicit UI states and an unpublished-league filter.
+The original report and archive remain unchanged.
+
+The default discrepancy ranking focuses on the eleven newly selected profiles;
+the secondary scope shows all twenty. Both scopes respect the active filters
+and sort actual absolute model-minus-market differences, without changing data.
+Optional browser QA: `node scripts/qa-authored.mjs [url]` covers the authored
+edition, player replacements, ranking scopes and the original-report CTA.
+
+`scripts/fetch-selected-photos.mjs` retrieves the eleven replacement portraits
+from Wikimedia Commons with licence/author metadata, and retains the other
+nine local photographs. It requires optional Sharp for WebP preparation;
+`SHARP_MODULE` can point to an existing installation. The older
+`fetch-editorial-assets.mjs` documents the initial edition's asset acquisition,
+not the current player selection. Do not use it to overwrite the new manifest.
+`npm run lint` also verifies the Spanish source and all player values/photos.

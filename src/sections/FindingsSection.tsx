@@ -20,10 +20,9 @@ export function FindingsSection() {
           ))}
         </div>
         <div className="findings-chart border-t border-line pt-5">
-          <h3 className="text-lg font-semibold text-ink">Which observed signals move with price?</h3>
+          <h3 className="text-lg font-semibold text-ink">¿Cómo se relaciona cada variable con el valor de mercado?</h3>
           <p className="mb-4 text-sm text-muted">
-            Correlations are descriptive, not causal. The yellow-card relationship is explicitly treated as confounded
-            by minutes played in the original report.
+            Muestro la relación lineal entre cada variable y la variable dependiente «valor de mercado». Un coeficiente positivo indica una relación lineal positiva; uno negativo, una relación inversa. Cuanto más cerca de cero, menor es la relación lineal observada.
           </p>
           <EChart
             ariaLabel="Correlations between variables and current market value"

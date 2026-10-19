@@ -5,8 +5,6 @@ import { Section } from '../components/Section';
 import { links } from '../content/site';
 import { PhotoCredits } from '../components/PlayerPortrait';
 import { researchTakeaways, retrospectiveCases } from '../content/research';
-import { useResearchArchive } from '../hooks/useResearchArchive';
-import { ResearchEvidence } from '../components/ResearchEvidence';
 
 const limitations = [
   'Historical Transfermarkt valuations from the 2021/22 and 2022/23 data context are not current prices.',
@@ -24,11 +22,10 @@ const future = [
 ];
 
 export function ResearchSection() {
-  const { topics } = useResearchArchive();
   return <Localized>{(
     <Section id="research" eyebrow="The final whistle" title="What the numbers explain. What they leave open.">
       <div className="research-takeaways">{researchTakeaways.map((takeaway, index) => <article key={takeaway.title}><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{takeaway.title}</h3><p>{takeaway.text}</p></div></article>)}</div>
-      <div className="retrospective-notes"><h3>Where the author looked next</h3><p>The report includes retrospective player case notes, rather than a complete dated valuation panel. These are the author’s accounts, not an independently reproduced temporal validation.</p><div>{retrospectiveCases.map((item) => <article key={item.player}><h4>{item.player}</h4><strong>{item.finding}</strong><p>{item.interpretation}</p></article>)}</div></div>
+      <div className="retrospective-notes"><h3>Volví a mirar a los jugadores</h3><div>{retrospectiveCases.map((item) => <article key={item.player}><h4>{item.player}</h4><strong>{item.finding}</strong><p>{item.interpretation}</p></article>)}</div></div>
       <div className="grid gap-8 lg:grid-cols-2">
         <Panel title="Limitations">
           <ul className="space-y-3">
@@ -45,12 +42,11 @@ export function ResearchSection() {
           </ul>
         </Panel>
       </div>
-      <div className="conclusion-source"><h3>Follow the interpretation back to the source</h3>{topics[55] && <ResearchEvidence topic={topics[55]} />}{topics[57] && <ResearchEvidence topic={topics[57]} />}</div>
+      <div className="research-report-access"><div><p>MI INVESTIGACIÓN, DE PRINCIPIO A FIN</p><h3>Detrás de cada resultado hay una decisión.</h3><span>He reunido el desarrollo completo, los análisis, las tablas y el código R en el informe original.</span></div><a href={links.originalResearch} target="_blank" rel="noreferrer">Accede a mi informe original <ExternalLink size={22} /></a></div>
       <div className="mt-10 border-t border-line pt-6">
         <h3 className="text-xl font-semibold text-ink">Technical resources</h3>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <Resource label="GitHub Repository" value={links.githubRepository} />
-          <Resource label="Original Research" value={links.originalResearch} />
           <Resource label="Technical Methodology" value={links.technicalMethodology} />
         </div>
         <a className="report-download" href={`${import.meta.env.BASE_URL}research/original-report.html`} download="Football-Value-Lab-Original-Research.html">Download the complete original HTML report</a>

@@ -2,10 +2,10 @@ import { Children, cloneElement, createContext, isValidElement, useContext, useE
 import type { ReactElement, ReactNode } from 'react';
 import { languages } from './languages';
 import type { Language, Messages, Translate } from './languages';
-import english from './locales/en.json';
+import spanish from './locales/es.json';
 import protectedNames from './protected.json';
 
-const loaders = import.meta.glob<{ default: Messages }>(['./locales/*.json', '!./locales/en.json']);
+const loaders = import.meta.glob<{ default: Messages }>(['./locales/*.json', '!./locales/es.json']);
 const protectedSet = new Set<string>(protectedNames);
 const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
 const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -27,8 +27,8 @@ interface I18nContextValue { language: Language; t: Translate; loading: boolean;
 const Context = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [language, setCurrentLanguage] = useState<Language>('en');
-  const [messages, setMessages] = useState<Messages>(english);
+  const [language, setCurrentLanguage] = useState<Language>('es');
+  const [messages, setMessages] = useState<Messages>(spanish);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const t = useMemo(() => makeTranslator(messages), [messages]);
@@ -36,7 +36,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const setLanguage = async (next: Language) => {
     setLoading(true); setError(false);
     try {
-      const nextMessages = next === 'en' ? english : (await loaders[`./locales/${next}.json`]()).default;
+      const nextMessages = next === 'es' ? spanish : (await loaders[`./locales/${next}.json`]()).default;
       setMessages(nextMessages); setCurrentLanguage(next);
       try { localStorage.setItem('fvl-language', next); } catch { /* Storage may be disabled. */ }
     } catch { setError(true); }
@@ -46,14 +46,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('fvl-language');
-      if (languages.some((item) => item.code === saved) && saved !== 'en') void setLanguage(saved as Language);
-    } catch { /* English remains available when storage is disabled. */ }
+      if (languages.some((item) => item.code === saved) && saved !== 'es') void setLanguage(saved as Language);
+    } catch { /* Spanish remains available when storage is disabled. */ }
   }, []);
 
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-    document.title = `Football Value Lab | ${t('Beyond the Price Tag')}`;
+    document.title = `Football Value Lab | 2021–2023 | ${t('Beyond the Price Tag')}`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', t('Football Value Lab is an interactive data science portfolio case study on historical football market valuations.'));
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('Football Value Lab is an interactive data science portfolio case study on historical football market valuations.'));

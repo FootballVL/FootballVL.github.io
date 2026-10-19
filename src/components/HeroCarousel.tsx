@@ -8,9 +8,9 @@ import { PlayerPortrait } from './PlayerPortrait';
 import type { PlayerValuation } from '../types';
 import './hero-carousel.css';
 
-const openingIds = ['thijs-dallinga', 'erling-haaland', 'jude-bellingham', 'kylian-mbappe'];
+const openingIds = ['thijs-dallinga', 'deniz-undav', 'alejandro-balde', 'giovanni-reyna'];
 const players = [
-  ...openingIds.map((id) => allPlayers.find((player) => player.id === id)!),
+  ...openingIds.flatMap((id) => allPlayers.filter((player) => player.id === id)),
   ...allPlayers.filter((player) => !openingIds.includes(player.id)),
 ];
 

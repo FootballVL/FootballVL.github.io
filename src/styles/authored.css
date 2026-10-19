@@ -1,0 +1,20 @@
+.cover-study-period { display: flex; align-items: baseline; gap: 24px; padding: 16px 0 20px; border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
+.cover-study-period > span { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+.cover-study-period strong { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; line-height: 1.1; font-weight: 600; color: var(--red); }
+.model-criterion { max-width: 850px; color: var(--muted); font-size: 12px; line-height: 1.7; margin-top: -12px; margin-bottom: 30px; }
+.research-report-access { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: center; padding: 40px 0; margin-top: 35px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
+.research-report-access p { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--red); margin-bottom: 14px; }
+.research-report-access h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 38px; line-height: 1.1; margin-bottom: 14px; }
+.research-report-access span { display: block; max-width: 620px; font-size: 14px; line-height: 1.7; color: var(--muted); }
+.research-report-access > a { display: inline-flex; align-items: center; justify-content: space-between; gap: 25px; padding: 20px 25px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font-size: 16px; max-width: 360px; }
+.research-report-access > a:hover { background: var(--green); }
+.source-reference { font-size: 13px !important; padding: 16px 0; line-height: 1.6; }
+.dossier-data-availability { padding: 14px 24px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 11px; line-height: 1.7; }
+.portrait-image { height: 340px; overflow: hidden; }
+.valuation-slide .portrait-image { height: 100%; }
+.player-portrait[data-player='sergio-camello'] img { object-position: right top; transform: scale(1.7); transform-origin: right top; }
+.dossier-ranking .ranking-scope { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 18px; }
+.dossier-ranking .ranking-scope button { display: inline-block; width: auto; padding: 10px 0; border-top: 0; border-bottom: 2px solid transparent; font-size: 12px; }
+.dossier-ranking .ranking-scope button[aria-pressed='true'] { color: var(--red); border-bottom-color: var(--red); }
+@media(max-width:700px) { .player-identity .portrait-image { height: 330px; } }
+@media(max-width:700px) { .cover-study-period { display: block; } .cover-study-period > span { display: block; margin-bottom: 10px; } .cover-study-period strong { font-size: 27px; display: block; } .research-report-access { grid-template-columns: minmax(0, 1fr); gap: 24px; } .research-report-access h3 { font-size: 32px; } .research-report-access > a { width: 100%; max-width: none; } }

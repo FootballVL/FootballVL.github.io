@@ -1,4 +1,5 @@
 import type { Insight, ModelMetric, PlayerValuation } from '../types';
+import playerSelection from './playerSelection.json';
 
 export const projectStats = [
   { label: 'Historical players', value: '10,754', note: 'Original final_data.csv records' },
@@ -124,60 +125,5 @@ export const insights: Insight[] = [
   },
 ];
 
-const above: PlayerValuation[] = [
-  ['Thijs Dallinga', 'FC Toulouse', 'Ligue 1', 22, 'Striker', 6773, 7000000, 31176699, -2.865889],
-  ['Adam Hlozek', 'Bayer 04 Leverkusen', 'Bundesliga', 20, 'Striker', 6039, 15000000, 36337880],
-  ['Ryan Yates', 'Nottingham Forest', 'Premier League', 25, 'Game_Creator', 6578, 8000000, 25743991, -2.243969],
-  ['Branco van den Boomen', 'FC Toulouse', 'Ligue 1', 27, 'Game_Creator', 6720, 9000000, 26228035, -2.054226],
-  ['Ryan Christie', 'AFC Bournemouth', 'Premier League', 28, 'Game_Creator', 5892, 9000000, 25672860, -2.013286],
-  ['Aleksandar Mitrovic', 'Fulham FC', 'Premier League', 28, 'Striker', 6188, 28000000, 44214420],
-  ['Joshua Zirkzee', 'Bologna FC 1909', 'Serie A', 22, 'Striker', 3979, 9000000, 21854804],
-  ['Scott McKenna', 'Nottingham Forest', 'Premier League', 26, 'Defensive_Players', 6431, 10000000, 21474740],
-  ['Nikola Moro', 'Bologna FC 1909', 'Serie A', 25, 'Defensive_Players', 4540, 7000000, 17653163],
-  ['Chancel Mbemba', 'Olympique Marseille', 'Ligue 1', 28, 'Defensive_Players', 7789, 20000000, 30375535],
-].map(([name, team, league, age, role, minutesPlayed, observedValue, estimatedValue, zScore]) => ({
-  id: `${name}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-  name: String(name),
-  team: String(team),
-  league: String(league),
-  age: Number(age),
-  role: role as PlayerValuation['role'],
-  minutesPlayed: Number(minutesPlayed),
-  observedValue: Number(observedValue),
-  estimatedValue: Number(estimatedValue),
-  difference: Number(estimatedValue) - Number(observedValue),
-  ratio: Number(estimatedValue) / Number(observedValue),
-  zScore: zScore === undefined ? undefined : Number(zScore),
-  sourceTable: 'Random Forest top estimated-above-market table recovered from Quarto HTML',
-  signal: 'estimated_above_market',
-}) as PlayerValuation);
-
-const below: PlayerValuation[] = [
-  ['Erling Haaland', 'Manchester City', 'Premier League', 22, 'Striker', 6519, 170000000, 73577150],
-  ['Pedri', 'FC Barcelona', 'La Liga', 20, 'Game_Creator', 4423, 100000000, 7569150, 4.931714],
-  ['Bukayo Saka', 'Arsenal FC', 'Premier League', 21, 'Full_Backs_Wingers', 7103, 110000000, 38798258],
-  ['Vinicius Junior', 'Real Madrid', 'La Liga', 22, 'Full_Backs_Wingers', 9033, 150000000, 83540535],
-  ['Kylian Mbappe', 'Paris Saint-Germain', 'Ligue 1', 24, 'Striker', 7476, 180000000, 118173462],
-  ['Florian Wirtz', 'Bayer 04 Leverkusen', 'Bundesliga', 20, 'Game_Creator', 4142, 85000000, 25975385],
-  ['Jude Bellingham', 'Borussia Dortmund', 'Bundesliga', 19, 'Game_Creator', 7353, 120000000, 64488435],
-  ['Khvicha Kvaratskhelia', 'SSC Napoli', 'Serie A', 22, 'Full_Backs_Wingers', 4936, 85000000, 30205124],
-  ['Declan Rice', 'West Ham United', 'Premier League', 24, 'Defensive_Players', 8570, 80000000, 26547950],
-  ['Neymar', 'Paris Saint-Germain', 'Ligue 1', 31, 'Full_Backs_Wingers', 4690, 70000000, 16727463],
-].map(([name, team, league, age, role, minutesPlayed, observedValue, estimatedValue, zScore]) => ({
-  id: `${name}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-  name: String(name),
-  team: String(team),
-  league: String(league),
-  age: Number(age),
-  role: role as PlayerValuation['role'],
-  minutesPlayed: Number(minutesPlayed),
-  observedValue: Number(observedValue),
-  estimatedValue: Number(estimatedValue),
-  difference: Number(estimatedValue) - Number(observedValue),
-  ratio: Number(estimatedValue) / Number(observedValue),
-  zScore: zScore === undefined ? undefined : Number(zScore),
-  sourceTable: 'Random Forest top estimated-below-market table recovered from Quarto HTML',
-  signal: 'estimated_below_market',
-}) as PlayerValuation);
-
-export const players: PlayerValuation[] = [...above, ...below];
+// Generated from published Random Forest tables; unreported fields stay absent.
+export const players: PlayerValuation[] = playerSelection as PlayerValuation[];

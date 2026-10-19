@@ -5,6 +5,7 @@ import './styles/global.css';
 import './styles/research.css';
 import { I18nProvider } from './i18n/I18nProvider';
 import './styles/languages.css';
+import './styles/authored.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

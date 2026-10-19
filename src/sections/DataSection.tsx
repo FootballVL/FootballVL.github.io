@@ -14,13 +14,10 @@ export function DataSection() {
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-6 text-muted">
           <p>
-            The original study asks whether historical player valuations from Transfermarkt can be modeled using
-            sport-performance variables. The dataset contains 10,754 players from 20 leagues, primarily covering the
-            2021/22 and 2022/23 seasons.
+            Quise averiguar hasta dónde podía explicar el valor de mercado de un futbolista con sus datos de rendimiento. Para ello trabajé con 10.754 jugadores de 20 ligas y con el contexto de las temporadas 2021/22 y 2022/23.
           </p>
           <p>
-            The raw data was enriched with league labels and Opta Power Ranking scores from September 2023. Roughly
-            400 inactive records with zero minutes were removed so the model focused on observed on-pitch production.
+            Enriquecí la base con las ligas y sus puntuaciones Opta de septiembre de 2023. Antes de modelizar, eliminé aproximadamente 400 registros sin minutos jugados para centrarme en la producción efectiva sobre el césped.
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-3 border-t border-line pt-5">
             {variables.map((variable) => (
