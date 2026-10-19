@@ -9,6 +9,11 @@ try {
   assert.equal(await page.locator('.method-boundaries').count(), 0);
   assert(!/junio/.test(await page.locator('.preparation-steps > li').nth(2).innerText()));
   assert.match(await page.locator('.preparation-steps > li').nth(6).innerText(), /logarithm/);
+  assert.match(await page.locator('.preparation-steps > li').first().innerText(), /10\/06\/2023 por Kang Huynh Nugyen Trong y Minh Nguyen/);
+  const contributions = await page.locator('.preparation-steps > li').nth(5).innerText();
+  assert.match(contributions, /contribuciones directas de gol/);
+  assert(!contributions.includes('450'));
+  assert.match(await page.locator('.dossier-intro').innerText(), /tomando 10 clasificados como infravalorados y 10 como sobrevalorados/);
   assert.match(await page.locator('.model-introduction').innerText(), /Busco identificar/);
   assert.match(await page.locator('.model-criterion').innerText(), /1,96/);
   assert.equal(await page.locator('#research .research-evidence').count(), 0);
@@ -17,6 +22,7 @@ try {
   const target = await page.locator('.research-report-access > a').getAttribute('href');
   assert.equal((await page.request.get(new URL(target, page.url()).href)).status(), 200);
   assert.equal(await page.locator('.dossier-index .player-index-row').count(), 20);
+  assert.deepEqual(await page.locator('.dossier-ranking > div:not(.ranking-scope) strong').allTextContents(), ['Alejandro Balde', 'Ansu Fati', 'Thijs Dallinga', 'Giovanni Reyna', 'Deniz Undav']);
   assert(!/Pedri|Neymar|Haaland|Mbappe|Saka|Bellingham/.test(await page.locator('.dossier-ranking > div:not(.ranking-scope)').innerText()));
   await page.locator('.ranking-scope button').nth(1).click();
   assert.match(await page.locator('.dossier-ranking > div:not(.ranking-scope)').innerText(), /Pedri/);

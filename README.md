@@ -138,7 +138,7 @@ from the published Random Forest tables with
 fields remain absent, with explicit UI states and an unpublished-league filter.
 The original report and archive remain unchanged.
 
-The default discrepancy ranking focuses on the eleven newly selected profiles;
+The default discrepancy ranking highlights Balde, Dallinga, Ansu Fati, Reyna and Undav;
 the secondary scope shows all twenty. Both scopes respect the active filters
 and sort actual absolute model-minus-market differences, without changing data.
 Optional browser QA: `node scripts/qa-authored.mjs [url]` covers the authored
